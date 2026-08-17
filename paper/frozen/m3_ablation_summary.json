@@ -1,0 +1,14 @@
+{
+  "n_cases": 6,
+  "n_rows": 36,
+  "mean_curve_nrmse": {
+    "hybrid/AIF": 0.043334594467980186,
+    "hybrid/AIF-free": 0.04443601707810987,
+    "neural_only/AIF": 0.9488461693273519,
+    "neural_only/AIF-free": 0.9440504145252858,
+    "physics_only/AIF": 0.04071823663806215,
+    "physics_only/AIF-free": 0.04288182820376321
+  },
+  "csv": "outputs\\m3_ablation\\ablation.csv",
+  "fig": "outputs\\m3_ablation\\fig3b_ablation.png"
+}

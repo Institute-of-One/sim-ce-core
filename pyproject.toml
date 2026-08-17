@@ -1,0 +1,79 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sim_ce_core"
+version = "0.1.0"
+description = "Differentiable, physics-informed contrast-enhancement kinetics simulator (Bae lineage)"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.11"
+authors = [{ name = "Shuji Yamamoto" }]
+keywords = [
+    "contrast-enhancement",
+    "pharmacokinetics",
+    "computed-tomography",
+    "physics-informed",
+    "differentiable-simulation",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+]
+dependencies = [
+    "torch>=2.1",
+    "torchdiffeq>=0.2.4",
+    "numpy>=1.24",
+    "scipy>=1.11",
+    "pydantic>=2.0",
+    "matplotlib>=3.8",
+    "pydicom>=2.4",
+    "SimpleITK>=2.3",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4",
+    "ruff>=0.1",
+    "black>=24.0",
+]
+
+[project.scripts]
+sim-ce = "sim_ce_core.experiments.run:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["sim_ce_core*"]
+
+[tool.setuptools.package-data]
+sim_ce_core = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+src = ["sim_ce_core", "tests"]
+exclude = [".venv", "build", "dist"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["sim_ce_core"]
+
+[tool.ruff.lint.per-file-ignores]
+"sim_ce_core/report/figures.py" = ["E402"]
+
+[tool.black]
+line-length = 88
+target-version = ["py311"]

@@ -1,0 +1,24 @@
+{
+  "n_cases": 20,
+  "dataset": "mphase_liver",
+  "sources": [
+    "tcia_hcc_tace_seg"
+  ],
+  "curve_nrmse": {
+    "closed_form": {
+      "mean": 0.0445006987695515,
+      "std": 0.07048753732655126,
+      "n": 20.0
+    },
+    "pinn_hybrid": {
+      "mean": 0.12692618123300287,
+      "std": 0.1542226720862452,
+      "n": 20.0
+    }
+  },
+  "param_mre": {},
+  "csv": "outputs\\m3_tcia\\fig3_external.csv",
+  "fig3": "outputs\\m3_tcia\\fig3_external_nrmse.png",
+  "example_pinn_nrmse": 0.010451678965501102,
+  "n_phase_rows": 53
+}

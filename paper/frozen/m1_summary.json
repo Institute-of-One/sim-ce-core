@@ -1,0 +1,10 @@
+{
+  "backend": "closed_form",
+  "dataset": "synthetic",
+  "n_times": 241,
+  "peak_aorta_hu": 420.0323220344926,
+  "peak_organ_hu": 288.2719256749034,
+  "closed_form_ode_nrmse": 4.011519790210254e-08,
+  "csv": "outputs\\m1_synthetic\\enhancement.csv",
+  "png": "outputs\\m1_synthetic\\enhancement.png"
+}

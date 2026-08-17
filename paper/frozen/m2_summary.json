@@ -1,0 +1,47 @@
+{
+  "n_cells": 12,
+  "n_rows": 48,
+  "csv": "outputs\\m2_robustness\\robustness_sweep.csv",
+  "fig1": "outputs\\m2_robustness\\fig1_reconstruction.png",
+  "fig2_curve": "outputs\\m2_robustness\\fig2_curve_nrmse.png",
+  "fig2_param": "outputs\\m2_robustness\\fig2_param_mre.png",
+  "stressed_cell": [
+    {
+      "method": "closed_form",
+      "noise_sd_hu": 25.0,
+      "subsample_stride": 4,
+      "dose_scale": 0.5,
+      "curve_nrmse": 0.4811253303924355,
+      "param_mre": 0.2688792567999467
+    },
+    {
+      "method": "deconvolution",
+      "noise_sd_hu": 25.0,
+      "subsample_stride": 4,
+      "dose_scale": 0.5,
+      "curve_nrmse": 0.4972248246797763,
+      "param_mre": null
+    },
+    {
+      "method": "pinn_hybrid",
+      "noise_sd_hu": 25.0,
+      "subsample_stride": 4,
+      "dose_scale": 0.5,
+      "curve_nrmse": 0.4778806103037558,
+      "param_mre": 0.11712343346486506,
+      "data_loss": 711.5265910704103,
+      "physics_loss": 5.2907166560302755e-05
+    },
+    {
+      "method": "amortized",
+      "noise_sd_hu": 25.0,
+      "subsample_stride": 4,
+      "dose_scale": 0.5,
+      "curve_nrmse": 0.30487961148792836,
+      "param_mre": 0.6579269720625212
+    }
+  ],
+  "example_noise_sd_hu": 25.0,
+  "example_stride": 4,
+  "example_dose_scale": 0.5
+}

@@ -1,0 +1,46 @@
+{
+  "freeze_date": "2026-08-17",
+  "hypothesis": "H1",
+  "honest_h1": "Partial support: PINN improves parameter MRE under synthetic stress; amortized improves curve NRMSE under the same stress; on 20 TCIA multi-phase cases closed-form Bae has lower curve NRMSE than a short PINN fit.",
+  "metrics": {
+    "m1_closed_form_ode_nrmse": 4.011519790210254e-08,
+    "m1_peak_aorta_hu": 420.0323220344926,
+    "m1_peak_organ_hu": 288.2719256749034,
+    "m2_stressed_closed_form_curve_nrmse": 0.4811253303924355,
+    "m2_stressed_closed_form_param_mre": 0.2688792567999467,
+    "m2_stressed_pinn_curve_nrmse": 0.4778806103037558,
+    "m2_stressed_pinn_param_mre": 0.11712343346486506,
+    "m2_stressed_amortized_curve_nrmse": 0.30487961148792836,
+    "m2_stressed_amortized_param_mre": 0.6579269720625212,
+    "m3_tcia_n_cases": 20,
+    "m3_tcia_source": "tcia_hcc_tace_seg",
+    "m3_tcia_closed_form_nrmse_mean": 0.0445006987695515,
+    "m3_tcia_pinn_nrmse_mean": 0.12692618123300287,
+    "m3_ablation_physics_aif": 0.04071823663806215,
+    "m3_ablation_hybrid_aif": 0.043334594467980186,
+    "m3_ablation_neural_aif": 0.9488461693273519
+  },
+  "files": [
+    "paper/frozen/manifest.json",
+    "paper/frozen/m1_summary.json",
+    "paper/frozen/m2_summary.json",
+    "paper/frozen/m2_robustness_sweep.csv",
+    "paper/frozen/m3_tcia_summary.json",
+    "paper/frozen/m3_tcia_external.csv",
+    "paper/frozen/m3_ablation_summary.json",
+    "paper/frozen/m3_ablation.csv"
+  ],
+  "reproduce_figures": [
+    "python -m sim_ce_core.experiments.run configs/m1_synthetic.yaml",
+    "python -m sim_ce_core.experiments.run configs/m2_robustness.yaml",
+    "python -m sim_ce_core.experiments.run configs/m3_tcia.yaml",
+    "python -m sim_ce_core.experiments.run configs/m3_ablation.yaml"
+  ],
+  "data": {
+    "tcia_collection": "HCC-TACE-Seg",
+    "doi": "10.7937/TCIA.5FNA-0924",
+    "license": "CC BY 4.0",
+    "n_cases": 20,
+    "download": "python -m sim_ce_core.data.tcia --n 20"
+  }
+}

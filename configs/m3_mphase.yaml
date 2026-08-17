@@ -1,0 +1,35 @@
+experiment: external
+seed: 1
+backend: closed_form
+t_end_s: 180.0
+dt_s: 1.0
+output_dir: outputs/m3_mphase
+dataset:
+  primary: mphase_liver
+  root: data/raw
+  proxy_root: data/proxy
+  max_cases: 12
+  allow_proxy: true
+free_params:
+  - central_blood_volume_ml
+  - cardiac_output_ml_s
+physiology:
+  central_blood_volume_ml: 1000.0
+  organ_volume_ml: 400.0
+  recirculation_volume_ml: 2500.0
+  cardiac_output_ml_s: 108.3
+  organ_flow_fraction: 0.25
+  elimination_rate_1_s: 0.0
+  iodine_to_hu: 26.0
+  transit_delay_s: 6.0
+injection:
+  concentration_mgi_ml: 300.0
+  volume_ml: 70.0
+  duration_s: 23.333333
+pinn:
+  hidden: 16
+  n_steps: 40
+  physics_weight: 1.0
+  mode: hybrid
+amortized:
+  use_aif: true

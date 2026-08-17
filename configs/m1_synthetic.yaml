@@ -1,0 +1,19 @@
+seed: 0
+backend: closed_form
+t_end_s: 120.0
+dt_s: 0.5
+noise_sd_hu: 0.0
+output_dir: outputs/m1_synthetic
+physiology:
+  central_blood_volume_ml: 1000.0
+  organ_volume_ml: 400.0
+  recirculation_volume_ml: 2500.0
+  cardiac_output_ml_s: 108.3
+  organ_flow_fraction: 0.25
+  elimination_rate_1_s: 0.0
+  iodine_to_hu: 26.0
+  transit_delay_s: 6.0
+injection:
+  concentration_mgi_ml: 350.0
+  volume_ml: 100.0
+  duration_s: 25.0

@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: If you use this software, please cite it using these metadata.
+title: "sim_ce_core: a differentiable physics-informed simulator of contrast-enhancement kinetics"
+type: software
+version: 0.1.0
+date-released: "2026-08-17"
+license: MIT
+repository-code: "https://github.com/Institute-of-One/sim-ce-core"
+url: "https://github.com/Institute-of-One/sim-ce-core"
+authors:
+  - family-names: Yamamoto
+    given-names: Shuji
+    email: yamamoto@lisit.jp
+    orcid: "https://orcid.org/0000-0001-9211-1071"
+    affiliation: Institute of One, LISIT Co., Ltd., Tokyo, Japan
+abstract: >
+  A differentiable, physics-informed neural forward simulator of contrast-agent
+  enhancement kinetics that generalizes Bae's compartmental CT-enhancement model.
+keywords:
+  - contrast enhancement
+  - pharmacokinetics
+  - computed tomography
+  - differentiable simulation
+  - physics-informed neural networks
