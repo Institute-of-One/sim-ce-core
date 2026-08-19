@@ -236,3 +236,54 @@ def run_robustness_sweep(
                 )
             )
     return rows
+
+
+def aggregate_cells(rows: Sequence[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Collapse repeated realisations of each cell into one row per method.
+
+    The parameter error is reported as a **root-mean-square** over realisations, because
+    that is the quantity a Cramer-Rao bound constrains. A mean absolute error is not
+    comparable with a standard deviation, and the difference is not cosmetic: the two
+    diverge exactly where the error distribution is skewed, which is where a fit is
+    starting to fail and where the comparison matters most.
+    """
+    grouped: dict[tuple[Any, ...], list[dict[str, Any]]] = {}
+    for row in rows:
+        key = (
+            row["method"],
+            row["noise_sd_hu"],
+            row["subsample_stride"],
+            row["dose_scale"],
+        )
+        grouped.setdefault(key, []).append(row)
+
+    out: list[dict[str, Any]] = []
+    for (method, noise, stride, dose), members in sorted(grouped.items(), key=str):
+        errors = np.array(
+            [float(m["param_mre"]) for m in members if m["param_mre"] is not None],
+            dtype=np.float64,
+        )
+        errors = errors[np.isfinite(errors)]
+        curves = np.array(
+            [float(m["curve_nrmse"]) for m in members], dtype=np.float64
+        )
+        curves = curves[np.isfinite(curves)]
+        out.append(
+            {
+                "method": method,
+                "noise_sd_hu": noise,
+                "subsample_stride": stride,
+                "dose_scale": dose,
+                "n_realisations": len(members),
+                "param_rmse": (
+                    float(np.sqrt((errors**2).mean())) if errors.size else None
+                ),
+                "param_mre_mean": float(errors.mean()) if errors.size else None,
+                "param_mre_sd": float(errors.std(ddof=1)) if errors.size > 1 else None,
+                "curve_nrmse_mean": float(curves.mean()) if curves.size else None,
+                "curve_nrmse_sd": (
+                    float(curves.std(ddof=1)) if curves.size > 1 else None
+                ),
+            }
+        )
+    return out

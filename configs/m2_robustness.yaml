@@ -27,11 +27,21 @@ sweep:
   noise_sd_hu: [0.0, 10.0, 25.0]
   subsample_stride: [1, 4]
   dose_scale: [1.0, 0.5]
+  # Independent noise draws per cell. One is enough to draw a curve and not enough to
+  # compare estimators against a Cramer-Rao bound, which constrains the spread of an
+  # error and says nothing about a single draw.
+  n_realisations: 20
 amortized:
-  hidden: 32
-  n_train: 96
-  n_epochs: 20
-  batch_size: 16
+  # At the original budget (96 draws, 20 epochs) this network returned 52 mL/s for every
+  # patient, and at eight times that it returned 108-109 -- the prior mean of cardiac
+  # output, to three figures. It began using its input somewhere between there and here:
+  # at 3072 draws and 120 epochs it recovers held-out cardiac output with correlation
+  # 0.99 and matched spread. Reporting the earlier numbers as a result about amortized
+  # inference would have been reporting an artefact of undertraining.
+  hidden: 64
+  n_train: 3072
+  n_epochs: 120
+  batch_size: 64
   n_times: 64
   lr: 0.001
   use_aif: true

@@ -39,6 +39,12 @@ class SweepConfig(BaseModel):
     noise_sd_hu: list[float] = Field(default_factory=lambda: [0.0, 10.0, 25.0])
     subsample_stride: list[int] = Field(default_factory=lambda: [1, 4])
     dose_scale: list[float] = Field(default_factory=lambda: [1.0, 0.5])
+    #: Independent noise draws per cell. One is enough to plot a curve and not enough to
+    #: compare estimators: a Cramer-Rao bound constrains the spread of an error, and a
+    #: single draw has no spread. The v1 sweep ran one, and roughly half its cells came
+    #: out below their own bound, which is what one draw does rather than evidence of
+    #: anything.
+    n_realisations: int = Field(ge=1, default=1)
 
 
 class AmortizedTrainConfig(BaseModel):

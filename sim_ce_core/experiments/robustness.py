@@ -22,6 +22,7 @@ from sim_ce_core.repro import seed_everything
 from sim_ce_core.validate.deconvolution import reconstruct_organ
 from sim_ce_core.validate.degrade import Degradation, apply_degradation, scale_protocol
 from sim_ce_core.validate.sweeps import (
+    aggregate_cells,
     default_ls_init,
     interpolate_to,
     run_robustness_sweep,
@@ -108,7 +109,16 @@ def _calibration_scatter(
     model: Any,
     output_dir: Path,
     n_holdout: int = 24,
-) -> None:
+) -> dict[str, Any]:
+    """Hold-out calibration of the amortized estimator, as numbers and not only a plot.
+
+    This figure existed and was never read. At the original training budget it is a flat
+    line: 52 mL/s predicted for true cardiac outputs from 53 to 181, an estimator that
+    had collapsed onto the mean of its prior and was nevertheless reported as the best
+    method on curve NRMSE. The correlation and the spread ratio now go into the summary,
+    so the manuscript can cite whether the network responds to its input at all rather
+    than leaving that to whoever opens the png.
+    """
     rng = np.random.default_rng(cfg.seed + 3)
     t_grid = model.t_grid
     true_q: list[float] = []
@@ -129,14 +139,26 @@ def _calibration_scatter(
         fitted = model.infer(observed)
         true_q.append(q)
         pred_q.append(fitted.cardiac_output_ml_s)
+    truth = np.asarray(true_q, dtype=np.float64)
+    prediction = np.asarray(pred_q, dtype=np.float64)
     save_scatter_plot(
-        np.asarray(true_q),
-        np.asarray(pred_q),
+        truth,
+        prediction,
         output_dir / "fig2b_calibration_q.png",
         title="Amortized cardiac output (hold-out synthetic)",
         xlabel="True Q (mL/s)",
         ylabel="Predicted Q (mL/s)",
     )
+    spread = float(prediction.std())
+    return {
+        "amortized_calibration": {
+            "n_holdout": int(n_holdout),
+            "correlation": float(np.corrcoef(truth, prediction)[0, 1]),
+            "sd_ratio": spread / float(truth.std()),
+            "predicted_range": [float(prediction.min()), float(prediction.max())],
+            "true_range": [float(truth.min()), float(truth.max())],
+        }
+    }
 
 
 def run_robustness_experiment(cfg: Any, output_dir: Path) -> dict[str, Any]:
@@ -166,19 +188,27 @@ def run_robustness_experiment(cfg: Any, output_dir: Path) -> dict[str, Any]:
         degradations=degradations,
         seed=cfg.seed,
     )
-    rows = run_robustness_sweep(
-        clean,
-        cfg.injection,
-        cfg.physiology,
-        degradations,
-        free_params=cfg.free_params,
-        amortized=amortized,
-        pinn_mode=cfg.pinn.mode,
-        pinn_hidden=cfg.pinn.hidden,
-        pinn_steps=cfg.pinn.n_steps,
-        physics_weight=cfg.pinn.physics_weight,
-        seed=cfg.seed,
-    )
+    # One draw per cell cannot be compared with a Cramer-Rao bound, which constrains
+    # the spread of an error rather than any single value. Each realisation is an
+    # independent noise draw through the same cells; the aggregate is what is reported.
+    rows: list[dict[str, Any]] = []
+    for realisation in range(cfg.sweep.n_realisations):
+        draw = run_robustness_sweep(
+            clean,
+            cfg.injection,
+            cfg.physiology,
+            degradations,
+            free_params=cfg.free_params,
+            amortized=amortized,
+            pinn_mode=cfg.pinn.mode,
+            pinn_hidden=cfg.pinn.hidden,
+            pinn_steps=cfg.pinn.n_steps,
+            physics_weight=cfg.pinn.physics_weight,
+            seed=cfg.seed + 1000 * realisation,
+        )
+        for row in draw:
+            row["realisation"] = realisation
+        rows.extend(draw)
     output_dir.mkdir(parents=True, exist_ok=True)
     save_rows_csv(rows, output_dir / "robustness_sweep.csv")
     save_sweep_plot(
@@ -198,23 +228,33 @@ def run_robustness_experiment(cfg: Any, output_dir: Path) -> dict[str, Any]:
         dose_scale=1.0,
     )
     example = _example_overlay(cfg, times, clean.region("organ"), output_dir)
-    _calibration_scatter(cfg, amortized, output_dir)
+    calibration = _calibration_scatter(cfg, amortized, output_dir)
 
-    stressed = [
-        row
-        for row in rows
-        if row["noise_sd_hu"] == max(cfg.sweep.noise_sd_hu)
-        and row["subsample_stride"] == max(cfg.sweep.subsample_stride)
-        and row["dose_scale"] == min(cfg.sweep.dose_scale)
-    ]
+    stressed = aggregate_cells(
+        [
+            row
+            for row in rows
+            if row["noise_sd_hu"] == max(cfg.sweep.noise_sd_hu)
+            and row["subsample_stride"] == max(cfg.sweep.subsample_stride)
+            and row["dose_scale"] == min(cfg.sweep.dose_scale)
+        ]
+    )
     summary = {
         "n_cells": len(degradations),
+        "n_realisations": cfg.sweep.n_realisations,
         "n_rows": len(rows),
+        "cells": aggregate_cells(rows),
         "csv": str(output_dir / "robustness_sweep.csv"),
         "fig1": str(output_dir / "fig1_reconstruction.png"),
         "fig2_curve": str(output_dir / "fig2_curve_nrmse.png"),
         "fig2_param": str(output_dir / "fig2_param_mre.png"),
         "stressed_cell": stressed,
+        "amortized_budget": {
+            "n_train": cfg.amortized.n_train,
+            "n_epochs": cfg.amortized.n_epochs,
+            "hidden": cfg.amortized.hidden,
+        },
+        **calibration,
         **example,
     }
     return summary
