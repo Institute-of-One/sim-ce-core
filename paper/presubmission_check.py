@@ -233,6 +233,55 @@ def check_built(built: str) -> None:
             warn(f"built manuscript contains literal \\{command}; check how it renders")
 
 
+# ---------------------------------------------------------------- cover letter
+def check_cover_letter() -> None:
+    """The cover letter is a second copy of the results, and copies drift.
+
+    A companion paper's letter kept an overclaim the manuscript had already dropped, and
+    another's submission form held an abstract three weeks out of date. Every number the
+    letter quotes must appear, at the precision the letter quotes it, in the frozen
+    metrics -- and the letter must not contradict the manuscript's title.
+    """
+    letter_path = PAPER / "cover_letter_cmpb.txt"
+    if not letter_path.exists():
+        warn("no cover letter yet")
+        return
+    letter = letter_path.read_text(encoding="utf-8")
+    # Identifiers that are not measurements: a licence version, a DOI, an ORCID. They
+    # look exactly like results to a search for decimal numbers, and "CC BY 4.0" is the
+    # one that fired first.
+    letter = re.sub(r"CC BY \d+\.\d+", "", letter)
+    letter = re.sub(r"10\.\d{4,}/\S+", "", letter)
+    letter = re.sub(r"\d{4}-\d{4}-\d{4}-\d{3}[\dXx]", "", letter)
+
+    manifest = json.loads((FROZEN / "manifest.json").read_text(encoding="utf-8"))
+    values = {
+        value
+        for value in manifest["metrics"].values()
+        if isinstance(value, (int, float))
+    }
+    renderings = {
+        format(value, spec)
+        for value in values
+        for spec in (".0f", ".1f", ".2f", ".3f", ".4f", ".0%", ".1%")
+    } | {str(value) for value in values if float(value) == int(value)}
+
+    for literal in set(re.findall(r"(?<![\w.])\d+\.\d+(?![\w])", letter)):
+        if literal not in renderings:
+            fail(
+                f"the cover letter quotes {literal}, which no frozen metric "
+                "renders as"
+            )
+
+    title = next(
+        (line[2:].strip() for line in SOURCE.read_text(encoding="utf-8").splitlines()
+         if line.startswith("# ")),
+        "",
+    )
+    if title and title not in " ".join(letter.split()):
+        fail("the cover letter does not quote the manuscript's title verbatim")
+
+
 # ---------------------------------------------------------------- provenance
 def check_provenance() -> None:
     """The external arm must be the real cohort and not the synthetic proxy."""
@@ -259,6 +308,7 @@ def main(argv: list[str] | None = None) -> int:
     check_numbers(src, built)
     check_figures(src)
     check_built(built)
+    check_cover_letter()
     check_provenance()
 
     for message in warnings:

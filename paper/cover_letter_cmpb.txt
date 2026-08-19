@@ -1,0 +1,89 @@
+Dear Editors,
+
+I am submitting "Sampling design bounds contrast-kinetics parameter recovery from CT, and
+a closed-form fit attains the bound" for consideration as Original Research in Computer
+Methods and Programs in Biomedicine.
+
+Physics-informed and amortized neural estimators are now routinely applied to
+contrast-kinetics and perfusion models. That work is validated where dynamic imaging is
+dense: myocardial perfusion MRI, DCE-MRI and CT perfusion sample tens of time points. A
+routine contrast-enhanced CT acquires two to four. This paper asks what such an
+acquisition determines about physiology, and whether that limit predicts the error
+estimators actually make.
+
+It reports four things. First, the reduced Bae compartment model has an exact
+one-parameter scale symmetry: three volumes, the cardiac output and the attenuation
+constant scale together with no effect on any enhancement curve, confirmed to machine
+precision in the forward simulation. Those five quantities are therefore not separately
+recoverable from enhancement at any sampling density — a property of the model rather
+than a shortage of data, and one that any fit reporting them is implicitly assuming away.
+
+Second, with the necessary fixing made explicit, the Cramér–Rao bound on the remaining
+parameters is 70% relative for a pre-contrast plus portal venous study, 14% when an
+arterial phase is added, and 13% with a fourth. A pre-contrast acquisition carries
+sensitivity identically zero, so a two-phase study is one informative measurement; taken
+alone the arterial phase carries 3.5 times the sensitivity of the portal venous phase and
+23 times the delayed one.
+
+Third — and this was the prespecified endpoint, chosen because it could fail — the bound
+predicts measured recovery error across eight sampling designs, each repeated over twenty
+independent noise draws, with Spearman correlations of 0.95 to 0.98 (p ≤ 0.0003) and the
+same for all three estimators.
+
+Fourth, the closed-form least-squares fit attains that bound, at a median 1.07 times it.
+The physics-informed hybrid runs at 1.52 and amortized inference at 1.72. What limits
+recovery here is the acquisition, not the estimator, and the classical estimator already
+extracts what the acquisition contains.
+
+I want to be explicit about what is not claimed. Applying physics-informed networks to
+contrast kinetics is prior art and is cited as such; Fisher-information-based experimental
+design is textbook and is cited as such. The contribution is the identifiability of this
+model at these phase counts, the test that the bound predicts error, and the finding that
+the classical estimator saturates it. The result on real multi-phase CT concerns curve
+reconstruction only, because there is no ground-truth physiology there.
+
+Two earlier claims from an internal draft of this work were withdrawn during preparation
+and are worth mentioning because they shaped the method reported here. A parameter-error
+advantage for the physics-informed estimator turned out to rest on a single noise draw
+per condition, and reverses over twenty. An advantage for amortized inference on curve
+error turned out to come from an undertrained network that returned a constant regardless
+of its input; retrained to a budget at which it demonstrably uses its input — correlation
+0.974 with held-out cardiac output — it no longer shows one. The manuscript reports the
+retrained network and the realisation count, and the calibration is in the frozen results
+so a reader can check which was done.
+
+I chose this journal because reporting new computational methodology alongside
+demonstrable software is what it states it exists for, and because that is the shape of
+this work rather than something it must apologise for. The software is installable, tested
+and deterministic; every number in the manuscript is emitted by executed code into
+machine-readable files and resolved into the text at build time, and the test suite fails
+if the two disagree.
+
+The work involved no human participants and collected no data; the external arm uses
+de-identified public images under CC BY 4.0. It received no external funding. I am the
+sole author. Competing interests, disclosed in full: I am Representative Director (CEO) of
+LISIT Co., Ltd. and Chief Executive Officer of TexelCraft OÜ, and Institute of One is the
+open-research initiative of LISIT Co., Ltd.; neither company sells or licenses any product
+related to this manuscript, and the work used no client or patient data. Two further
+interests bear on the subject rather than on finance: the software the study runs on was
+written by me, so I am both the implementer and the assessor, which the Limitations state;
+and the manuscript argues for openly referenced validation while my research initiative is
+founded on releasing code and data openly.
+
+Generative AI was used in preparing this work and is declared in the manuscript: it
+scaffolded and refactored the software, drafted tests, wrote figure and analysis scripts,
+and drafted and revised prose. It was not used to design the study, choose the endpoints,
+or decide what the results mean, and no numerical result came from it. No AI system is an
+author.
+
+The manuscript has not been published or submitted elsewhere, and no preprint of it
+exists.
+
+Thank you for considering it.
+
+Yours faithfully,
+
+Shuji Yamamoto
+Institute of One, LISIT Co., Ltd., Tokyo, Japan
+yamamoto@lisit.jp
+ORCID 0000-0001-9211-1071
