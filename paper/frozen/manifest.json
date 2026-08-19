@@ -1,46 +1,95 @@
 {
-  "freeze_date": "2026-08-17",
   "hypothesis": "H1",
-  "honest_h1": "Partial support: PINN improves parameter MRE under synthetic stress; amortized improves curve NRMSE under the same stress; on 20 TCIA multi-phase cases closed-form Bae has lower curve NRMSE than a short PINN fit.",
+  "reproduce_figures": [
+    "python -m sim_ce_core.experiments.run configs/m1_synthetic.yaml",
+    "python -m sim_ce_core.experiments.run configs/m2_robustness.yaml",
+    "python -m sim_ce_core.experiments.run configs/m3_ablation.yaml",
+    "python -m sim_ce_core.experiments.run configs/m3_tcia.yaml",
+    "python -m sim_ce_core.experiments.identifiability_map",
+    "python paper/freeze.py"
+  ],
+  "primary_endpoint": "Whether the Fisher information of a sampling design predicts which physiological parameters are recoverable from it.",
   "metrics": {
     "m1_closed_form_ode_nrmse": 4.011519790210254e-08,
     "m1_peak_aorta_hu": 420.0323220344926,
     "m1_peak_organ_hu": 288.2719256749034,
-    "m2_stressed_closed_form_curve_nrmse": 0.4811253303924355,
-    "m2_stressed_closed_form_param_mre": 0.2688792567999467,
-    "m2_stressed_pinn_curve_nrmse": 0.4778806103037558,
-    "m2_stressed_pinn_param_mre": 0.11712343346486506,
-    "m2_stressed_amortized_curve_nrmse": 0.30487961148792836,
-    "m2_stressed_amortized_param_mre": 0.6579269720625212,
+    "m2_n_realisations": 20,
     "m3_tcia_n_cases": 20,
     "m3_tcia_source": "tcia_hcc_tace_seg",
+    "m3_tcia_n_phase_rows": 53,
     "m3_tcia_closed_form_nrmse_mean": 0.0445006987695515,
     "m3_tcia_pinn_nrmse_mean": 0.12692618123300287,
     "m3_ablation_physics_aif": 0.04071823663806215,
     "m3_ablation_hybrid_aif": 0.043334594467980186,
-    "m3_ablation_neural_aif": 0.9488461693273519
+    "m3_ablation_neural_aif": 0.9488461693273519,
+    "amortized_calibration_correlation": 0.9741695785331838,
+    "amortized_calibration_sd_ratio": 0.8716275696112304,
+    "amortized_n_train": 3072,
+    "amortized_n_epochs": 120,
+    "endpoint_n_cells": 8,
+    "m2_stressed_closed_form_param_rmse": 0.18444956250373037,
+    "m2_stressed_closed_form_curve_nrmse": 0.5001245650857864,
+    "endpoint_closed_form_spearman": 0.9523809523809524,
+    "endpoint_closed_form_p": 0.000260400024387251,
+    "endpoint_closed_form_efficiency": 1.0727986362527635,
+    "m2_stressed_pinn_hybrid_param_rmse": 0.2144246478011354,
+    "m2_stressed_pinn_hybrid_curve_nrmse": 0.5010951132118426,
+    "endpoint_pinn_hybrid_spearman": 0.9761904761904763,
+    "endpoint_pinn_hybrid_p": 3.314396026200098e-05,
+    "endpoint_pinn_hybrid_efficiency": 1.517953849929247,
+    "m2_stressed_amortized_param_rmse": 0.1948494586219177,
+    "m2_stressed_amortized_curve_nrmse": 0.49229507844861364,
+    "endpoint_amortized_spearman": 0.9523809523809524,
+    "endpoint_amortized_p": 0.000260400024387251,
+    "endpoint_amortized_efficiency": 1.7180866412273537
   },
   "files": [
-    "paper/frozen/manifest.json",
     "paper/frozen/m1_summary.json",
-    "paper/frozen/m2_summary.json",
     "paper/frozen/m2_robustness_sweep.csv",
-    "paper/frozen/m3_tcia_summary.json",
-    "paper/frozen/m3_tcia_external.csv",
+    "paper/frozen/m2_summary.json",
+    "paper/frozen/m35_identifiability.json",
+    "paper/frozen/m3_ablation.csv",
     "paper/frozen/m3_ablation_summary.json",
-    "paper/frozen/m3_ablation.csv"
+    "paper/frozen/m3_tcia_external.csv",
+    "paper/frozen/m3_tcia_phases.csv",
+    "paper/frozen/m3_tcia_summary.json"
   ],
-  "reproduce_figures": [
-    "python -m sim_ce_core.experiments.run configs/m1_synthetic.yaml",
-    "python -m sim_ce_core.experiments.run configs/m2_robustness.yaml",
-    "python -m sim_ce_core.experiments.run configs/m3_tcia.yaml",
-    "python -m sim_ce_core.experiments.run configs/m3_ablation.yaml"
-  ],
-  "data": {
-    "tcia_collection": "HCC-TACE-Seg",
-    "doi": "10.7937/TCIA.5FNA-0924",
-    "license": "CC BY 4.0",
-    "n_cases": 20,
-    "download": "python -m sim_ce_core.data.tcia --n 20"
+  "sources": {
+    "m1_summary.json": {
+      "path": "outputs/m1_synthetic/summary.json",
+      "command": "python -m sim_ce_core.experiments.run configs/m1_synthetic.yaml"
+    },
+    "m2_robustness_sweep.csv": {
+      "path": "outputs/m2_robustness/robustness_sweep.csv",
+      "command": "python -m sim_ce_core.experiments.run configs/m2_robustness.yaml"
+    },
+    "m2_summary.json": {
+      "path": "outputs/m2_robustness/summary.json",
+      "command": "python -m sim_ce_core.experiments.run configs/m2_robustness.yaml"
+    },
+    "m35_identifiability.json": {
+      "path": "outputs/m35_identifiability/summary.json",
+      "command": "python -m sim_ce_core.experiments.identifiability_map"
+    },
+    "m3_ablation.csv": {
+      "path": "outputs/m3_ablation/ablation.csv",
+      "command": "python -m sim_ce_core.experiments.run configs/m3_ablation.yaml"
+    },
+    "m3_ablation_summary.json": {
+      "path": "outputs/m3_ablation/summary.json",
+      "command": "python -m sim_ce_core.experiments.run configs/m3_ablation.yaml"
+    },
+    "m3_tcia_external.csv": {
+      "path": "outputs/m3_tcia/fig3_external.csv",
+      "command": "python -m sim_ce_core.experiments.run configs/m3_tcia.yaml"
+    },
+    "m3_tcia_phases.csv": {
+      "path": "outputs/m3_tcia/fig3_mphase_phases.csv",
+      "command": "python -m sim_ce_core.experiments.run configs/m3_tcia.yaml"
+    },
+    "m3_tcia_summary.json": {
+      "path": "outputs/m3_tcia/summary.json",
+      "command": "python -m sim_ce_core.experiments.run configs/m3_tcia.yaml"
+    }
   }
 }

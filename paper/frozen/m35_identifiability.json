@@ -1,0 +1,244 @@
+{
+  "n_realisations": 20,
+  "clinical_designs": [
+    {
+      "design": "two-phase (pre, portal venous)",
+      "n_phases": 2,
+      "times_s": [
+        0.0,
+        70.0
+      ],
+      "full_model_rank": 2,
+      "full_model_parameters": 7,
+      "not_separable": [
+        "central_blood_volume_ml",
+        "organ_volume_ml",
+        "recirculation_volume_ml",
+        "cardiac_output_ml_s",
+        "organ_flow_fraction",
+        "iodine_to_hu",
+        "transit_delay_s"
+      ],
+      "fitted_crlb": {
+        "central_blood_volume_ml": 0.602182427124359,
+        "cardiac_output_ml_s": 1.1426834995056665
+      },
+      "fitted_crlb_mean": 0.8724329633150127,
+      "fitted_expected_absolute_error": 0.6961007917645413,
+      "fitted_numerical_rank": 2,
+      "fitted_condition_number": 21.078110149209486
+    },
+    {
+      "design": "three-phase (pre, arterial, portal venous)",
+      "n_phases": 3,
+      "times_s": [
+        0.0,
+        35.0,
+        70.0
+      ],
+      "full_model_rank": 4,
+      "full_model_parameters": 7,
+      "not_separable": [
+        "central_blood_volume_ml",
+        "organ_volume_ml",
+        "recirculation_volume_ml",
+        "cardiac_output_ml_s",
+        "organ_flow_fraction",
+        "iodine_to_hu",
+        "transit_delay_s"
+      ],
+      "fitted_crlb": {
+        "central_blood_volume_ml": 0.1718784763199129,
+        "cardiac_output_ml_s": 0.18414614043108313
+      },
+      "fitted_crlb_mean": 0.17801230837549803,
+      "fitted_expected_absolute_error": 0.14203327248568848,
+      "fitted_numerical_rank": 2,
+      "fitted_condition_number": 3.015477003754147
+    },
+    {
+      "design": "four-phase (adds delayed)",
+      "n_phases": 4,
+      "times_s": [
+        0.0,
+        35.0,
+        70.0,
+        180.0
+      ],
+      "full_model_rank": 6,
+      "full_model_parameters": 7,
+      "not_separable": [
+        "central_blood_volume_ml",
+        "organ_volume_ml",
+        "recirculation_volume_ml",
+        "cardiac_output_ml_s",
+        "organ_flow_fraction",
+        "iodine_to_hu",
+        "transit_delay_s"
+      ],
+      "fitted_crlb": {
+        "central_blood_volume_ml": 0.1486329399949448,
+        "cardiac_output_ml_s": 0.17834050951421968
+      },
+      "fitted_crlb_mean": 0.16348672475458226,
+      "fitted_expected_absolute_error": 0.1304435335779088,
+      "fitted_numerical_rank": 2,
+      "fitted_condition_number": 2.8022233478807355
+    },
+    {
+      "design": "dense (every 10 s to 190 s)",
+      "n_phases": 20,
+      "times_s": [
+        0.0,
+        10.0,
+        20.0,
+        30.0,
+        40.0,
+        50.0,
+        60.0,
+        70.0,
+        80.0,
+        90.0,
+        100.0,
+        110.0,
+        120.0,
+        130.0,
+        140.0,
+        150.0,
+        160.0,
+        170.0,
+        180.0,
+        190.0
+      ],
+      "full_model_rank": 6,
+      "full_model_parameters": 7,
+      "not_separable": [
+        "central_blood_volume_ml",
+        "organ_volume_ml",
+        "recirculation_volume_ml",
+        "cardiac_output_ml_s",
+        "organ_flow_fraction",
+        "iodine_to_hu"
+      ],
+      "fitted_crlb": {
+        "central_blood_volume_ml": 0.06687650926299554,
+        "cardiac_output_ml_s": 0.1168095224262085
+      },
+      "fitted_crlb_mean": 0.09184301584460203,
+      "fitted_expected_absolute_error": 0.0732801243599809,
+      "fitted_numerical_rank": 2,
+      "fitted_condition_number": 5.591449092075188
+    }
+  ],
+  "primary_endpoint": {
+    "n_cells": 8,
+    "rows": [
+      {
+        "noise_sd_hu": 10.0,
+        "subsample_stride": 1,
+        "dose_scale": 0.5,
+        "n_times": 91,
+        "expected_absolute_error": 0.02248531752867453,
+        "closed_form": 0.02435635619232752,
+        "pinn_hybrid": 0.036049473105920896,
+        "amortized": 0.058325533246069206
+      },
+      {
+        "noise_sd_hu": 10.0,
+        "subsample_stride": 1,
+        "dose_scale": 1.0,
+        "n_times": 91,
+        "expected_absolute_error": 0.011242658764336779,
+        "closed_form": 0.01194403988430812,
+        "pinn_hybrid": 0.014439644720597864,
+        "amortized": 0.04850413373698807
+      },
+      {
+        "noise_sd_hu": 10.0,
+        "subsample_stride": 4,
+        "dose_scale": 0.5,
+        "n_times": 23,
+        "expected_absolute_error": 0.044969271356287165,
+        "closed_form": 0.05351366303355352,
+        "pinn_hybrid": 0.06442579730265782,
+        "amortized": 0.0766813454357647
+      },
+      {
+        "noise_sd_hu": 10.0,
+        "subsample_stride": 4,
+        "dose_scale": 1.0,
+        "n_times": 23,
+        "expected_absolute_error": 0.022484635678144446,
+        "closed_form": 0.015744614546983515,
+        "pinn_hybrid": 0.0260635442135998,
+        "amortized": 0.038920431665084
+      },
+      {
+        "noise_sd_hu": 25.0,
+        "subsample_stride": 1,
+        "dose_scale": 0.5,
+        "n_times": 91,
+        "expected_absolute_error": 0.05621329382168633,
+        "closed_form": 0.05771093050141318,
+        "pinn_hybrid": 0.10439337146906295,
+        "amortized": 0.08655951842979889
+      },
+      {
+        "noise_sd_hu": 25.0,
+        "subsample_stride": 1,
+        "dose_scale": 1.0,
+        "n_times": 91,
+        "expected_absolute_error": 0.028106646910841956,
+        "closed_form": 0.023918364196995185,
+        "pinn_hybrid": 0.029526459372442027,
+        "amortized": 0.059167202637620285
+      },
+      {
+        "noise_sd_hu": 25.0,
+        "subsample_stride": 4,
+        "dose_scale": 0.5,
+        "n_times": 23,
+        "expected_absolute_error": 0.11242317839071782,
+        "closed_form": 0.15065724956957866,
+        "pinn_hybrid": 0.18935580687381579,
+        "amortized": 0.17137889194787823
+      },
+      {
+        "noise_sd_hu": 25.0,
+        "subsample_stride": 4,
+        "dose_scale": 1.0,
+        "n_times": 23,
+        "expected_absolute_error": 0.05621158919536113,
+        "closed_form": 0.0701086570701594,
+        "pinn_hybrid": 0.0963638341506711,
+        "amortized": 0.08796764524394624
+      }
+    ],
+    "by_method": {
+      "closed_form": {
+        "spearman": 0.9523809523809524,
+        "p_value": 0.000260400024387251,
+        "efficiency_ratio_median": 1.0727986362527635,
+        "efficiency_ratio_min": 0.7002388107309927,
+        "efficiency_ratio_max": 1.3400906443507705,
+        "cells_below_bound": 2
+      },
+      "pinn_hybrid": {
+        "spearman": 0.9761904761904763,
+        "p_value": 3.314396026200098e-05,
+        "efficiency_ratio_median": 1.517953849929247,
+        "efficiency_ratio_min": 1.050515184756969,
+        "efficiency_ratio_max": 1.8570940140993732,
+        "cells_below_bound": 0
+      },
+      "amortized": {
+        "spearman": 0.9523809523809524,
+        "p_value": 0.000260400024387251,
+        "efficiency_ratio_median": 1.7180866412273537,
+        "efficiency_ratio_min": 1.524408884369596,
+        "efficiency_ratio_max": 4.31429386533101,
+        "cells_below_bound": 0
+      }
+    }
+  }
+}
