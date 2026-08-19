@@ -1,135 +1,223 @@
 {
   "n_realisations": 20,
-  "clinical_designs": [
-    {
-      "design": "two-phase (pre, portal venous)",
-      "n_phases": 2,
-      "times_s": [
-        0.0,
-        70.0
-      ],
-      "full_model_rank": 2,
-      "full_model_parameters": 7,
-      "not_separable": [
-        "central_blood_volume_ml",
-        "organ_volume_ml",
-        "recirculation_volume_ml",
-        "cardiac_output_ml_s",
-        "organ_flow_fraction",
-        "iodine_to_hu",
-        "transit_delay_s"
-      ],
-      "fitted_crlb": {
-        "central_blood_volume_ml": 0.602182427124359,
-        "cardiac_output_ml_s": 1.1426834995056665
+  "clinical_designs": {
+    "designs": [
+      {
+        "design": "two-phase (pre, portal venous)",
+        "n_phases": 2,
+        "times_s": [
+          0.0,
+          70.0
+        ],
+        "full_model_rank": 2,
+        "full_model_parameters": 7,
+        "not_separable": [
+          "central_blood_volume_ml",
+          "organ_volume_ml",
+          "recirculation_volume_ml",
+          "cardiac_output_ml_s",
+          "organ_flow_fraction",
+          "iodine_to_hu",
+          "transit_delay_s"
+        ],
+        "fitted_crlb": {
+          "central_blood_volume_ml": 0.602182427124359,
+          "cardiac_output_ml_s": 1.1426834995056665
+        },
+        "fitted_crlb_mean": 0.8724329633150127,
+        "fitted_expected_absolute_error": 0.6961007917645413,
+        "fitted_numerical_rank": 2,
+        "fitted_condition_number": 21.078110149209486
       },
-      "fitted_crlb_mean": 0.8724329633150127,
-      "fitted_expected_absolute_error": 0.6961007917645413,
-      "fitted_numerical_rank": 2,
-      "fitted_condition_number": 21.078110149209486
-    },
-    {
-      "design": "three-phase (pre, arterial, portal venous)",
-      "n_phases": 3,
-      "times_s": [
-        0.0,
-        35.0,
-        70.0
-      ],
-      "full_model_rank": 4,
-      "full_model_parameters": 7,
-      "not_separable": [
-        "central_blood_volume_ml",
-        "organ_volume_ml",
-        "recirculation_volume_ml",
-        "cardiac_output_ml_s",
-        "organ_flow_fraction",
-        "iodine_to_hu",
-        "transit_delay_s"
-      ],
-      "fitted_crlb": {
-        "central_blood_volume_ml": 0.1718784763199129,
-        "cardiac_output_ml_s": 0.18414614043108313
+      {
+        "design": "three-phase (pre, arterial, portal venous)",
+        "n_phases": 3,
+        "times_s": [
+          0.0,
+          35.0,
+          70.0
+        ],
+        "full_model_rank": 4,
+        "full_model_parameters": 7,
+        "not_separable": [
+          "central_blood_volume_ml",
+          "organ_volume_ml",
+          "recirculation_volume_ml",
+          "cardiac_output_ml_s",
+          "organ_flow_fraction",
+          "iodine_to_hu",
+          "transit_delay_s"
+        ],
+        "fitted_crlb": {
+          "central_blood_volume_ml": 0.1718784763199129,
+          "cardiac_output_ml_s": 0.18414614043108313
+        },
+        "fitted_crlb_mean": 0.17801230837549803,
+        "fitted_expected_absolute_error": 0.14203327248568848,
+        "fitted_numerical_rank": 2,
+        "fitted_condition_number": 3.015477003754147
       },
-      "fitted_crlb_mean": 0.17801230837549803,
-      "fitted_expected_absolute_error": 0.14203327248568848,
-      "fitted_numerical_rank": 2,
-      "fitted_condition_number": 3.015477003754147
-    },
-    {
-      "design": "four-phase (adds delayed)",
-      "n_phases": 4,
-      "times_s": [
-        0.0,
-        35.0,
-        70.0,
-        180.0
-      ],
-      "full_model_rank": 6,
-      "full_model_parameters": 7,
-      "not_separable": [
-        "central_blood_volume_ml",
-        "organ_volume_ml",
-        "recirculation_volume_ml",
-        "cardiac_output_ml_s",
-        "organ_flow_fraction",
-        "iodine_to_hu",
-        "transit_delay_s"
-      ],
-      "fitted_crlb": {
-        "central_blood_volume_ml": 0.1486329399949448,
-        "cardiac_output_ml_s": 0.17834050951421968
+      {
+        "design": "four-phase (adds delayed)",
+        "n_phases": 4,
+        "times_s": [
+          0.0,
+          35.0,
+          70.0,
+          180.0
+        ],
+        "full_model_rank": 6,
+        "full_model_parameters": 7,
+        "not_separable": [
+          "central_blood_volume_ml",
+          "organ_volume_ml",
+          "recirculation_volume_ml",
+          "cardiac_output_ml_s",
+          "organ_flow_fraction",
+          "iodine_to_hu",
+          "transit_delay_s"
+        ],
+        "fitted_crlb": {
+          "central_blood_volume_ml": 0.1486329399949448,
+          "cardiac_output_ml_s": 0.17834050951421968
+        },
+        "fitted_crlb_mean": 0.16348672475458226,
+        "fitted_expected_absolute_error": 0.1304435335779088,
+        "fitted_numerical_rank": 2,
+        "fitted_condition_number": 2.8022233478807355
       },
-      "fitted_crlb_mean": 0.16348672475458226,
-      "fitted_expected_absolute_error": 0.1304435335779088,
-      "fitted_numerical_rank": 2,
-      "fitted_condition_number": 2.8022233478807355
-    },
-    {
-      "design": "dense (every 10 s to 190 s)",
-      "n_phases": 20,
-      "times_s": [
-        0.0,
-        10.0,
-        20.0,
-        30.0,
-        40.0,
-        50.0,
-        60.0,
-        70.0,
-        80.0,
-        90.0,
-        100.0,
-        110.0,
-        120.0,
-        130.0,
-        140.0,
-        150.0,
-        160.0,
-        170.0,
-        180.0,
-        190.0
-      ],
-      "full_model_rank": 6,
-      "full_model_parameters": 7,
-      "not_separable": [
-        "central_blood_volume_ml",
-        "organ_volume_ml",
-        "recirculation_volume_ml",
-        "cardiac_output_ml_s",
-        "organ_flow_fraction",
-        "iodine_to_hu"
-      ],
-      "fitted_crlb": {
-        "central_blood_volume_ml": 0.06687650926299554,
-        "cardiac_output_ml_s": 0.1168095224262085
+      {
+        "design": "dense (every 10 s to 190 s)",
+        "n_phases": 20,
+        "times_s": [
+          0.0,
+          10.0,
+          20.0,
+          30.0,
+          40.0,
+          50.0,
+          60.0,
+          70.0,
+          80.0,
+          90.0,
+          100.0,
+          110.0,
+          120.0,
+          130.0,
+          140.0,
+          150.0,
+          160.0,
+          170.0,
+          180.0,
+          190.0
+        ],
+        "full_model_rank": 6,
+        "full_model_parameters": 7,
+        "not_separable": [
+          "central_blood_volume_ml",
+          "organ_volume_ml",
+          "recirculation_volume_ml",
+          "cardiac_output_ml_s",
+          "organ_flow_fraction",
+          "iodine_to_hu"
+        ],
+        "fitted_crlb": {
+          "central_blood_volume_ml": 0.06687650926299554,
+          "cardiac_output_ml_s": 0.1168095224262085
+        },
+        "fitted_crlb_mean": 0.09184301584460203,
+        "fitted_expected_absolute_error": 0.0732801243599809,
+        "fitted_numerical_rank": 2,
+        "fitted_condition_number": 5.591449092075188
+      }
+    ],
+    "per_phase_sensitivity": [
+      {
+        "time_s": 0.0,
+        "sensitivity": 0.0
       },
-      "fitted_crlb_mean": 0.09184301584460203,
-      "fitted_expected_absolute_error": 0.0732801243599809,
-      "fitted_numerical_rank": 2,
-      "fitted_condition_number": 5.591449092075188
-    }
-  ],
+      {
+        "time_s": 10.0,
+        "sensitivity": 0.1975999429559767
+      },
+      {
+        "time_s": 20.0,
+        "sensitivity": 1.0182074040655922
+      },
+      {
+        "time_s": 30.0,
+        "sensitivity": 1.4644042110005147
+      },
+      {
+        "time_s": 35.0,
+        "sensitivity": 1.3794517794111292
+      },
+      {
+        "time_s": 40.0,
+        "sensitivity": 1.012755860153972
+      },
+      {
+        "time_s": 50.0,
+        "sensitivity": 0.49346871716110385
+      },
+      {
+        "time_s": 60.0,
+        "sensitivity": 0.49603638835311914
+      },
+      {
+        "time_s": 70.0,
+        "sensitivity": 0.38906380127243634
+      },
+      {
+        "time_s": 80.0,
+        "sensitivity": 0.27600241045648244
+      },
+      {
+        "time_s": 90.0,
+        "sensitivity": 0.18618310529343174
+      },
+      {
+        "time_s": 100.0,
+        "sensitivity": 0.12196090396304426
+      },
+      {
+        "time_s": 110.0,
+        "sensitivity": 0.07836167751867551
+      },
+      {
+        "time_s": 120.0,
+        "sensitivity": 0.059741223864206994
+      },
+      {
+        "time_s": 130.0,
+        "sensitivity": 0.05977709818961163
+      },
+      {
+        "time_s": 140.0,
+        "sensitivity": 0.05979817193780157
+      },
+      {
+        "time_s": 150.0,
+        "sensitivity": 0.059810684298434724
+      },
+      {
+        "time_s": 160.0,
+        "sensitivity": 0.05981813694151272
+      },
+      {
+        "time_s": 170.0,
+        "sensitivity": 0.05982257601507168
+      },
+      {
+        "time_s": 180.0,
+        "sensitivity": 0.05982521698327248
+      },
+      {
+        "time_s": 190.0,
+        "sensitivity": 0.05982678572506672
+      }
+    ]
+  },
   "primary_endpoint": {
     "n_cells": 8,
     "rows": [

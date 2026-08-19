@@ -87,9 +87,22 @@ def bound_for(
 
 def clinical_map(
     physiology: PhysioParams, protocol: InjectionProtocol, *, sigma_hu: float = 25.0
-) -> list[dict[str, Any]]:
+) -> dict[str, Any]:
     """What each routine phase pattern determines, for the full physiology and for the
     two parameters the inverse actually frees."""
+    # Sensitivity carried by each acquisition time on its own. The pre-contrast phase
+    # contributes identically zero -- there is no contrast in the patient yet -- so a
+    # "two-phase" study is one informative measurement, which is the fact that makes the
+    # two-phase bound what it is.
+    per_phase = []
+    for time_s in sorted({t for times in CLINICAL_DESIGNS.values() for t in times}):
+        column = jacobian(
+            physiology, protocol, [time_s], parameter_names=DEFAULT_FREE
+        ).jacobian
+        per_phase.append(
+            {"time_s": float(time_s), "sensitivity": float(column.abs().max())}
+        )
+
     rows = []
     for label, times in CLINICAL_DESIGNS.items():
         full = analyse(
@@ -114,7 +127,7 @@ def clinical_map(
                 **{f"fitted_{key}": value for key, value in fitted.items()},
             }
         )
-    return rows
+    return {"designs": rows, "per_phase_sensitivity": per_phase}
 
 
 def bound_versus_error(

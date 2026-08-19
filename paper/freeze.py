@@ -74,6 +74,14 @@ def _reproduce_order() -> list[str]:
     return [*seen, "python paper/freeze.py"]
 
 
+def _phase(design: dict[str, Any], time_s: float) -> float:
+    """Sensitivity carried by one acquisition time on its own."""
+    for entry in design["clinical_designs"]["per_phase_sensitivity"]:
+        if entry["time_s"] == time_s:
+            return entry["sensitivity"]
+    raise KeyError(f"no per-phase sensitivity recorded at {time_s} s")
+
+
 def _stressed(summary: dict[str, Any], method: str, key: str) -> Any:
     for row in summary.get("stressed_cell", []):
         if row["method"] == method:
@@ -106,6 +114,12 @@ def derive_metrics(loaded: dict[str, Any]) -> dict[str, Any]:
         "amortized_n_train": m2["amortized_budget"]["n_train"],
         "amortized_n_epochs": m2["amortized_budget"]["n_epochs"],
         "endpoint_n_cells": design["primary_endpoint"]["n_cells"],
+        "arterial_sensitivity": _phase(design, 35.0),
+        "portal_venous_sensitivity": _phase(design, 70.0),
+        "delayed_sensitivity": _phase(design, 180.0),
+        "precontrast_sensitivity": _phase(design, 0.0),
+        "arterial_over_portal_venous": _phase(design, 35.0) / _phase(design, 70.0),
+        "arterial_over_delayed": _phase(design, 35.0) / _phase(design, 180.0),
     }
     for method in ("closed_form", "pinn_hybrid", "amortized"):
         metrics[f"m2_stressed_{method}_param_rmse"] = _stressed(

@@ -4,7 +4,7 @@
      Do not type a number into this file. If a value is not reachable from a frozen
      file, add it to the freeze rather than typing it here. -->
 
-# Differentiable Contrast Kinetics: A Physics-Informed Neural Generalization of Bae's Contrast-Enhancement Model with Amortized Inference, Validated on Public Multi-phase CT
+# Sampling design bounds contrast-kinetics parameter recovery from CT, and a closed-form fit attains the bound
 
 **Shuji Yamamoto**
 Institute of One, LISIT Co., Ltd., Tokyo, Japan
@@ -12,123 +12,353 @@ yamamoto@lisit.jp · ORCID 0000-0001-9211-1071
 
 ## Abstract
 
-**Purpose.** To test whether a differentiable, physics-informed generalization of Bae's
-compartmental contrast-enhancement model reconstructs time–enhancement curves and recovers
-physiology more robustly than closed-form Bae and deconvolution under sparse, noisy, or
-low-dose sampling (**H1**), using synthetic ground truth plus a minimal public CT cohort.
+**Background and Objectives.** Physics-informed and amortized neural estimators are
+increasingly applied to contrast-kinetics and perfusion models. Whether they can recover
+physiology from the two to four phases a routine contrast-enhanced CT acquires has not
+been established, and reconstructing a curve is not the same as determining the
+parameters that generated it. We asked what a phase pattern determines, and whether that
+limit predicts the error estimators actually make.
 
-**Methods.** A three-compartment linear model (central blood, organ, recirculation) was
-implemented in closed form and as a `torchdiffeq` ODE. A PINN residual and an amortized
-inference network were trained on the simulator. Robustness was swept over noise, temporal
-stride, and dose. External validation used
-20 TCIA HCC-TACE-Seg baseline liver CTs (CC BY 4.0).
+**Methods.** A differentiable three-compartment Bae-style model gives the sensitivity
+matrix in closed form. From it we compute the Fisher information of an acquisition
+schedule and the Cramér–Rao bound on each parameter, in log space so the bound reads as
+a relative standard error. Four estimators — closed-form least squares, Tikhonov
+deconvolution, a physics-informed residual, and amortized inference — were run over a
+grid of noise, temporal stride and dose, each cell repeated over
+20 independent noise draws, and on
+20 public multi-phase liver CTs.
 
-**Results.** Closed-form and ODE forwards agreed to NRMSE
-4.0×10⁻⁸. Under the strongest
-synthetic stress (25 HU noise, stride 4, half dose), the PINN hybrid reduced parameter mean
-relative error versus closed-form Bae
-(0.12 vs
-0.27); amortized inference
-had the lowest curve NRMSE
-(0.30 vs
-0.48). Ablations:
-physics-only ≈ hybrid (NRMSE ≈
-0.04); neural-only failed (≈
-0.95). On
-20 real multi-phase cases, closed-form Bae fit sparse
-phases better than a short-trained PINN
-(0.045 vs
-0.127).
+**Results.** The model has an exact scale symmetry: three volumes, cardiac output and
+the attenuation constant scale together with no effect on any enhancement curve, so a
+seven-parameter physiology is never identifiable from enhancement, at any sampling
+density. Given the fixings that break it, the bound of a design predicts measured
+recovery error across
+8 designs — Spearman
+0.95 to
+0.98,
+p ≤ 0.0003. The closed-form fit
+attains it (median error/bound
+1.07); the neural
+estimators do not
+(1.52 and
+1.72).
 
-**Conclusions.** H1 is only partly supported: the physics-informed residual helps parameter
-recovery under synthetic stress, but on very sparse real phases the classical Bae forward
-remains the more stable curve fit. The software and frozen configs make that honest result
-reproducible.
+**Conclusions.** What limits parameter recovery here is the acquisition, not the
+estimator.
 
-**Keywords:** contrast enhancement; pharmacokinetic modelling; physics-informed neural
-networks; neural ordinary differential equations; amortized inference; computed tomography.
+**Keywords:** contrast enhancement; pharmacokinetic modelling; identifiability; Fisher
+information; optimal experimental design; physics-informed neural networks; computed
+tomography.
 
 ## 1. Introduction
 
-Bae's physiology-based model predicts organ-specific CT enhancement from injection protocol
-and body size [1,2]. A software-only reimplementation would be a technical note. This
-article tests **H1**: a physics-informed neural generalization recovers curves and parameters
-from sparse / low-dose / noisy samples more robustly than (a) closed-form Bae and (b)
-deconvolution, on synthetic ground truth and
-20 public multi-phase CTs.
+Bae's physiology-based model predicts organ-specific CT enhancement from injection
+protocol and body habitus, and remains the reference account of how injection rate,
+dose and body size set enhancement timing and magnitude [1,2]. Recovering physiology
+*from* an observed enhancement curve is the inverse of that map, and it is the operation
+a growing body of work now performs with neural machinery: physics-informed networks for
+myocardial perfusion MRI [3], for dynamic contrast-enhanced MRI in the presence of
+diffusion [4], compartment-model-informed networks for drug dynamics [5], and
+physics-informed evaluation of iodinated-contrast pharmacokinetics [6]. Scientific
+machine learning has been surveyed as a way to add neural components to existing
+pharmacokinetic models [7], and neural ordinary differential equations have been
+reviewed for medical image analysis [8]. Enhancement prediction for the liver has also
+been approached patient-specifically without a neural inverse at all [9].
+
+That work is validated where dynamic imaging is dense. Myocardial perfusion MRI, DCE-MRI
+and CT perfusion sample tens of time points. **Routine contrast-enhanced CT acquires two
+to four.** The regime is not a harder version of the same problem; it is a different one,
+and the classical literature already records that sparse temporal sampling breaks the
+other standard inverse — deconvolution overestimates flow as the sampling interval grows,
+which is why regularised and sparse variants were developed [10,11].
+
+Two questions follow, and they are not the same question. *Can the curve be
+reconstructed?* and *can the parameters that generated it be recovered?* A method may
+answer the first while the data cannot answer the second, and a comparison of estimators
+cannot distinguish those cases from the outside. What separates them is a property of the
+acquisition rather than of any estimator: the Fisher information of the sampling design,
+and the Cramér–Rao bound it places on every unbiased estimator at once.
+
+This paper computes that bound for the phase patterns a routine abdominal CT actually
+uses, and tests whether it predicts the error estimators make. The test could fail. If
+the bound does not track measured recovery error, the account offered here is wrong.
+
+**Contributions.**
+
+1. An exact structural non-identifiability of the reduced Bae model: a one-parameter
+   scale symmetry under which three volumes, cardiac output and the attenuation constant
+   move together with no observable effect. It is proved by construction and confirmed to
+   4×10⁻⁸ in the forward
+   simulation.
+2. The Cramér–Rao bound on physiological recovery for two-, three- and four-phase
+   acquisitions, in relative units a reader can act on.
+3. A test, over 8 sampling designs and
+   20 noise draws each, that the bound
+   predicts measured error — and a measurement of how close each estimator comes to it.
+4. An open, deterministic implementation in which every number reported here is
+   regenerated from machine-readable files by a documented command.
+
+We do not claim novelty for applying physics-informed networks to contrast kinetics
+[3,4,5,6], nor for Fisher-information-based experimental design, which is standard. What
+is new is the identifiability of this model at these phase counts, and the finding that
+the classical estimator already saturates it.
 
 ## 2. Methods
 
-**Forward model.** States are iodine concentration in central blood, organ, and
-recirculation. Injection is a delayed rectangular bolus. The linear system `dc/dt = Ac + bI(t)`
-is solved by matrix exponential (Van Loan) and by piecewise `dopri5`. Enhancement is
-`HU = k c` with `k = 26` HU·mL/mg I.
+### 2.1 Forward model
 
-**Inverse methods.** Closed-form least squares in log-parameter space; Tikhonov deconvolution
-of organ from AIF (omitted when `T < 8`); PINN hybrid `C = C_phys(θ) + r_φ(t)` with a
-homogeneous-ODE residual penalty; amortized MLP trained on simulator draws.
+States are iodine concentration in central blood, organ and recirculation. Injection is
+a delayed rectangular bolus. The linear system `dc/dt = Ac + bI(t)` is solved in closed
+form by matrix exponential and, independently, by adaptive `dopri5`; the two agree to
+NRMSE 4×10⁻⁸. Enhancement is
+`HU = k c`. Peak aorta and organ enhancement at the reference protocol are
+420 and
+288 HU.
 
-**Data.** Synthetic curves from known θ. External set:
-20 TCIA HCC-TACE-Seg patients, source
-`tcia_hcc_tace_seg`, PRE plus one contrast series, liver HU-window
-ROI [3,4]. No large-cohort download.
+This is a reduced descendant of Bae's model, which used more than a hundred differential
+equations [1]. The reduction is what makes the sensitivity matrix available in closed
+form, and it is also a limitation (Section 5).
 
-**Reproducibility.** `python -m sim_ce_core.experiments.run <yaml>` regenerates each figure.
-`python -m sim_ce_core.experiments.repro_check` runs lint, tests, and freeze-file checks.
+### 2.2 Sensitivity, information and identifiability
+
+The system parameters enter through the state matrix as tensors, so `J = dC/dθ` is
+obtained by automatic differentiation. The transit delay shifts the simulation grid,
+which is sampled by nearest index and carries no gradient; its column is a central
+difference. Every column is checked against a central difference in the test suite, so
+neither route is trusted alone.
+
+For independent Gaussian measurement noise the Fisher information of a set of acquisition
+times is `F(S) = Σ Jᵀ Σ⁻¹ J`, and `F⁻¹` bounds the covariance of any unbiased estimator.
+All quantities are computed in **log-parameter space**, `θ ∂C/∂θ`. This is not
+presentational: the parameters span four orders of magnitude in their units, and a Fisher
+matrix built from raw derivatives reports a condition number that depends on whether
+volumes were written in litres or millilitres. In log space the Cramér–Rao bound is a
+relative standard error.
+
+Enhancement is read in the aorta and in the organ. The recirculation compartment is a
+modelling device rather than something a scan reports, and including it would credit the
+design with information no radiologist ever sees.
+
+### 2.3 Estimators
+
+Four, spanning the classical and the learned. **Closed-form least squares** in
+log-parameter space. **Tikhonov deconvolution** of the organ curve from the arterial
+input. **A physics-informed hybrid**, `C = C_phys(θ) + r_φ(t)`, with a homogeneous-ODE
+residual penalty. **Amortized inference**, a network trained on simulator draws to map an
+observed curve to parameters.
+
+**Training budget.** The amortized network is trained on
+3072 draws for
+120 epochs. Budget was not a free
+choice: at a thirty-second the network returns a constant, and at an eighth it returns
+the prior mean of cardiac output to three figures. At the reported budget it tracks
+held-out cardiac output with correlation
+0.974 and
+0.87 of the true spread.
+A comparison against an undertrained network is not a comparison against amortized
+inference, and this calibration is reported so a reader can see which was done.
+
+### 2.4 Sampling designs and realisations
+
+Twelve designs: noise 0, 10 and 25 HU; temporal stride 1 and 4; dose 1.0 and 0.5.
+**Each is repeated over 20 independent
+noise draws.** A Cramér–Rao bound constrains the spread of an error and says nothing
+about a single value, so a single draw per design cannot be compared with one. Parameter
+error is reported as a root-mean-square over realisations, because that is the quantity
+the bound constrains; a mean absolute error is not comparable with a standard deviation.
+
+For the same reason the comparator for a mean absolute relative error is not the bound
+itself but `√(2/π)` times it, which is what the absolute error of a zero-mean Gaussian
+averages to.
+
+### 2.5 Real multi-phase CT
+
+20 patients from the TCIA
+HCC-TACE-Seg collection, source `tcia_hcc_tace_seg`,
+CC BY 4.0 [12,13], giving 53
+phase-level measurements. The liver region of interest is an HU window rather than the
+published segmentation, and the injection protocol is a population default because body
+weight is not in the imaging archive. Both are limitations rather than choices, and
+neither is hidden in what follows.
+
+### 2.6 Reproducibility
+
+Every figure and number is regenerated by the commands recorded in
+`paper/frozen/manifest.json`. The manuscript resolves its numbers from those files at
+build time; a value that cannot be resolved is a build error, and a test fails if any
+frozen metric appears in the text as a typed literal.
 
 ## 3. Results
 
-**Forward fidelity (Fig. 1).** Peak aorta / organ
-420 /
-288 HU. Closed-form versus ODE NRMSE
-4.0×10⁻⁸.
+### 3.1 An exact scale symmetry
 
-**Robustness (Figs. 2–3).** On clean data the closed form recovers θ to numerical noise. In
-the stressed cell (noise 25 HU, stride 4, dose 0.5):
+Scaling the three volumes, the cardiac output and the attenuation constant by a common
+factor leaves every enhancement curve unchanged. The rate constants are ratios `q/v`, the
+bolus enters as `1/v_c`, and `HU = k c` absorbs the remaining factor. In the forward
+simulation the difference is
+4×10⁻⁸ relative — machine
+precision.
 
-| Method | Curve NRMSE | Parameter MRE |
-|---|---|---|
-| Closed-form Bae | 0.48 | 0.27 |
-| Deconvolution | 0.50 | — |
-| PINN hybrid | 0.48 | 0.12 |
-| Amortized | 0.30 | 0.66 |
+The consequence is not a sampling problem. **Those five quantities cannot be recovered
+separately from enhancement at any density or noise level**, and the identifiability
+analysis reaches rank
+6 of
+7
+on a twenty-point design exactly as it does on a four-phase one (Figure 1, left). Any
+estimate of them rests on fixing at least one, which the conventional inverse does
+implicitly by taking physiology from body habitus.
 
-**Ablation (Fig. 5).** Physics-only and hybrid reach
+### 3.2 What routine phase counts determine, and which phase carries it
+
+A pre-contrast acquisition carries no information about physiology: there is no contrast
+in the patient, the sensitivity is identically
+0, and a "two-phase" study is
+therefore **one** informative measurement. The rest of the phases are not equivalent
+either. Taken alone, the arterial phase carries sensitivity
+1.38, the portal venous phase
+0.39 and the delayed phase
+0.06 — respectively
+3.5 and
+23 times as much as the other
+two, in the same units.
+
+The bounds follow. For the two parameters an inverse actually frees, at 25 HU noise, the
+Cramér–Rao bound is
+70%
+relative on a pre-contrast plus portal venous study. Adding the arterial phase takes it
+to
+14%;
+adding a delayed phase on top of that takes it only to
+13%,
+and twenty evenly spaced samples reach
+7%
+(Figure 1, right). **No estimator does better than that**, whatever it is built from.
+
+The practical content is in the first step rather than the last. One extra acquisition,
+placed arterially, buys a fivefold reduction in the bound; the fourth phase buys almost
+nothing, and going to twenty buys less than the arterial phase did on its own.
+
+### 3.3 The bound predicts the error
+
+Across 8 noisy designs, the bound tracks
+the error measured over 20 realisations
+each: Spearman 0.95
+(p = 0.0003) for the closed form,
+0.98 for the
+physics-informed hybrid and
+0.95 for amortized
+inference (Figure 2). The prespecified endpoint could have come out otherwise; it did
+not.
+
+### 3.4 The classical estimator attains the bound
+
+The distance above the identity line in Figure 2 is the estimator's own cost, and it is
+the whole of what a better estimator could recover. The closed-form fit runs at a median
+1.07 times the bound.
+The physics-informed hybrid runs at
+1.52 and amortized
+inference at 1.72.
+
+In the most degraded design the three are not distinguishable by parameter error —
+0.18,
+0.21 and
+0.19 root-mean-square
+over 20 realisations — nor by curve
+NRMSE, at
+0.50,
+0.50 and
+0.49.
+
+### 3.5 Ablation
+
+Physics-only and hybrid reach
 0.04 and
-0.04 NRMSE with the AIF,
-and are unchanged without it. Neural-only reaches
-0.95: at the training
-budget used here it is not a competitive curve fitter.
+0.04 curve NRMSE with the
+arterial input. Neural-only reaches
+0.95: without the physics the
+residual network is not a curve fitter at this budget. The information the hybrid uses
+comes from the compartment model, not from the network.
 
-**External CT (Fig. 4).** 20 cases, source
-`tcia_hcc_tace_seg`. Closed-form NRMSE
-0.045 ±
-0.070; PINN hybrid
-0.127 ±
-0.154. Phase-level predictions:
-53 rows. There is no ground-truth θ on real data.
+### 3.6 Real multi-phase CT
+
+On 20 patients the closed-form fit
+reaches curve NRMSE
+0.045 against
+0.127 for the physics-informed
+hybrid. There is no ground-truth physiology on real data, so this is a statement about
+curve reconstruction and not about parameter recovery — which is the distinction the rest
+of the paper exists to draw.
 
 ## 4. Discussion
 
-H1 holds for parameter recovery under synthetic degradation (PINN) and for curve
-reconstruction under the same stress (amortized). It does not hold for short PINN fits on
-two- to four-phase real CT, where the classical Bae model is more stable. That is the result
-reported here. A larger PINN budget or a population prior may close the real-data gap; that
-is not claimed.
+The result is a statement about acquisitions rather than about algorithms. Given a
+two-phase abdominal CT, the physiology of a three-compartment contrast model is
+determined to tens of per cent at best, and that figure is a property of when the scanner
+fired. An estimator cannot improve on it, and on this evidence the classical one is
+already within seven per cent of it.
 
-Limitations: reduced three-compartment physiology; the liver ROI is an HU window rather than
-the published segmentation; the injection protocol for the TCIA cases is a population default
-because body weight is not in the imaging archive; amortized training was short.
+This reframes the comparison that motivated the work. A physics-informed residual and an
+amortized network were expected to help most where the data are worst. They do not,
+because at that point there is nothing left to extract: the closed form has taken it. The
+neural methods are not failing at a hard problem; they are paying an estimator's cost on
+a problem whose difficulty is set elsewhere.
 
-## 5. Data and code
+For practice the useful reading is negative and specific. Reporting physiological
+parameters from a routine two- to four-phase CT requires either fixing most of the model
+from other information — which is a modelling assumption, and should be stated as one —
+or acquiring more phases. Which additional phase is worth acquiring is a question the
+same Fisher machinery can answer, and we have not answered it here.
 
-- Software: MIT, this repository.
-- TCIA HCC-TACE-Seg: CC BY 4.0 [3,4].
-- Frozen tables: `paper/frozen/`.
+## 5. Limitations
+
+The physiology is a reduced three-compartment model, not Bae's full system [1]; the scale
+symmetry reported in Section 3.1 is a property of this reduction and its generalisation
+is not established. The deconvolution baseline is classical Tikhonov, while the CT
+perfusion literature has moved to sparse and total-variation regularised variants
+[10,11]; a stronger deconvolution baseline would raise that arm and is not tested here.
+The real-data arm has no ground-truth physiology, uses an HU-window liver region rather
+than the published segmentation, and assumes a population injection protocol because
+body weight is absent from the archive. Bounds are computed at a point estimate of the
+physiology rather than integrated over a prior. The noise model is independent and
+Gaussian in HU.
+
+## 6. Conclusions
+
+For contrast-kinetics recovery from routine multi-phase CT, the binding constraint is the
+sampling design. Its Cramér–Rao bound predicts measured error across designs and
+estimators, and a closed-form least-squares fit attains it. Physics-informed and
+amortized estimators, trained to a budget at which they demonstrably use their input, run
+at one and a half to seven-tenths again that error. Effort spent on the estimator is
+spent where the limit is not.
+
+## Data and code
+
+Software under the MIT licence, with the frozen tables and the commands that regenerate
+every figure, in this repository. TCIA HCC-TACE-Seg is CC BY 4.0 [12,13].
+
+## Declaration of generative AI use
+
+Generative AI (Claude, Anthropic, through the Claude Code command-line tool) was used in
+preparing this work: scaffolding and refactoring the software, drafting tests, writing
+the figure and analysis scripts, and drafting and revising manuscript prose. It was not
+used to design the study, to choose the endpoints, or to decide what the results mean. No
+numerical result came from the model: every number in this manuscript is emitted by
+executed code into machine-readable files and resolved into the text at build time, and
+the test suite fails if the two disagree. The author designed the study, re-executed every
+result, and is solely accountable for the content. No AI system is an author.
 
 ## References
 
 1. K. T. Bae, J. P. Heiken, and J. A. Brink, "Aortic and hepatic contrast medium enhancement at CT. Part I. Prediction with a computer model," *Radiology* **207**(3), 647–655 (1998) [doi:10.1148/radiology.207.3.9609886].
 2. K. T. Bae, "Intravenous contrast medium administration and scan timing at CT: considerations and approaches," *Radiology* **256**(1), 32–61 (2010) [doi:10.1148/radiol.10090908].
-3. A. M. Moawad, D. Fuentes, A. Morshid, et al., "Multimodality annotated hepatocellular carcinoma data set including pre- and post-TACE with imaging segmentation," *Sci. Data* **10**, 33 (2023) [doi:10.1038/s41597-023-01928-3].
-4. A. M. Moawad, D. Fuentes, M. ElBanan, et al., "Multimodality annotated HCC cases with and without advanced imaging segmentation (HCC-TACE-Seg)," The Cancer Imaging Archive (2021) [doi:10.7937/TCIA.5FNA-0924].
+3. R. van Herten, A. Chiribiri, M. Breeuwer, et al., "Physics-informed neural networks for myocardial perfusion MRI quantification," *Med. Image Anal.* **78**, 102399 (2022) [doi:10.1016/j.media.2022.102399].
+4. D. Sainz-DeMena, M. Á. Pérez, and J. M. García-Aznar, "Exploring the potential of physics-informed neural networks to extract vascularization data from DCE-MRI in the presence of diffusion," *Med. Eng. Phys.* **123**, 104092 (2023) [doi:10.1016/j.medengphy.2023.104092].
+5. N. Ahmadi Daryakenari, S. Wang, and G. Karniadakis, "CMINNs: compartment model informed neural networks — unlocking drug dynamics," *Comput. Biol. Med.* **184**, 109392 (2025) [doi:10.1016/j.compbiomed.2024.109392].
+6. T. Souza, R. Amorim, and V. Rispoli, "Evaluating pharmacokinetic models of iodized contrast using physics-informed neural networks," *IFMBE Proc.*, 623–632 (2025) [doi:10.1007/978-3-031-94921-0_68].
+7. D. Valderrama, A. Ponce-Bobadilla, S. Mensing, et al., "Integrating machine learning with pharmacokinetic models: benefits of scientific machine learning in adding neural network components to existing PK models," *CPT Pharmacometrics Syst. Pharmacol.* **13**(1), 41–53 (2023) [doi:10.1002/psp4.13054].
+8. H. Niu, Y. Zhou, X. Yan, et al., "On the applications of neural ordinary differential equations in medical image analysis," *Artif. Intell. Rev.* **57**(9) (2024) [doi:10.1007/s10462-024-10894-0].
+9. H. Setiawan, C. Chen, E. Abadi, et al., "A patient-informed approach to predict iodinated-contrast media enhancement in the liver," *Eur. J. Radiol.* **156**, 110555 (2022) [doi:10.1016/j.ejrad.2022.110555].
+10. R. Fang, T. Chen, and P. C. Sanelli, "Towards robust deconvolution of low-dose perfusion CT: sparse perfusion deconvolution using online dictionary learning," *Med. Image Anal.* **17**(4), 417–428 (2013) [doi:10.1016/j.media.2013.02.005].
+11. R. Fang, S. Zhang, T. Chen, et al., "Robust low-dose CT perfusion deconvolution via tensor total-variation regularization," *IEEE Trans. Med. Imaging* **34**(7), 1533–1548 (2015) [doi:10.1109/TMI.2015.2405015].
+12. A. M. Moawad, A. Morshid, A. M. Khalaf, et al., "Multimodality annotated hepatocellular carcinoma data set including pre- and post-TACE with imaging segmentation," *Sci. Data* **10**, 33 (2023) [doi:10.1038/s41597-023-01928-3].
+13. A. M. Moawad, D. Fuentes, M. ElBanan, et al., "Multimodality annotated HCC cases with and without advanced imaging segmentation (HCC-TACE-Seg)," The Cancer Imaging Archive (2021) [doi:10.7937/TCIA.5FNA-0924].
