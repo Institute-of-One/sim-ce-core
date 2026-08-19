@@ -37,3 +37,5 @@ Thumbs.db
 
 # Early-scaffold duplicate of PROJECT_SPEC.md; the public spec is PROJECT_SPEC.md.
 sim_ce_core_PROJECT_SPEC.md
+paper/build/
+paper/_probe.md
