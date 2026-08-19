@@ -66,8 +66,8 @@ reviewed for medical image analysis [8]. Enhancement prediction for the liver ha
 been approached patient-specifically without a neural inverse at all [9].
 
 That work is validated where dynamic imaging is dense. Myocardial perfusion MRI, DCE-MRI
-and CT perfusion sample tens of time points. **Routine contrast-enhanced CT acquires two
-to four.** The regime is not a harder version of the same problem; it is a different one,
+and CT perfusion sample tens of time points. *Routine contrast-enhanced CT acquires two
+to four.* The regime is not a harder version of the same problem; it is a different one,
 and the classical literature already records that sparse temporal sampling breaks the
 other standard inverse — deconvolution overestimates flow as the sampling interval grows,
 which is why regularised and sparse variants were developed [10,11].
@@ -110,7 +110,7 @@ the classical estimator already saturates it.
 States are iodine concentration in central blood, organ and recirculation. Injection is
 a delayed rectangular bolus. The linear system `dc/dt = Ac + bI(t)` is solved in closed
 form by matrix exponential and, independently, by adaptive `dopri5`; the two agree to
-NRMSE [[results:manifest.json:metrics.m1_closed_form_ode_nrmse|sci0]]. Enhancement is
+NRMSE [[results:manifest.json:metrics.m1_closed_form_ode_nrmse|sci0]] (Figure 3). Enhancement is
 `HU = k c`. Peak aorta and organ enhancement at the reference protocol are
 [[results:manifest.json:metrics.m1_peak_aorta_hu|.0f]] and
 [[results:manifest.json:metrics.m1_peak_organ_hu|.0f]] HU.
@@ -129,7 +129,7 @@ neither route is trusted alone.
 
 For independent Gaussian measurement noise the Fisher information of a set of acquisition
 times is `F(S) = Σ Jᵀ Σ⁻¹ J`, and `F⁻¹` bounds the covariance of any unbiased estimator.
-All quantities are computed in **log-parameter space**, `θ ∂C/∂θ`. This is not
+All quantities are computed in *log-parameter space*, `θ ∂C/∂θ`. This is not
 presentational: the parameters span four orders of magnitude in their units, and a Fisher
 matrix built from raw derivatives reports a condition number that depends on whether
 volumes were written in litres or millilitres. In log space the Cramér–Rao bound is a
@@ -141,11 +141,18 @@ design with information no radiologist ever sees.
 
 ### 2.3 Estimators
 
-Four, spanning the classical and the learned. **Closed-form least squares** in
-log-parameter space. **Tikhonov deconvolution** of the organ curve from the arterial
-input. **A physics-informed hybrid**, `C = C_phys(θ) + r_φ(t)`, with a homogeneous-ODE
-residual penalty. **Amortized inference**, a network trained on simulator draws to map an
-observed curve to parameters.
+Four, spanning the classical and the learned.
+
+**Closed-form least squares.** Levenberg–Marquardt in log-parameter space.
+
+**Tikhonov deconvolution.** The organ curve deconvolved from the arterial input,
+omitted where fewer than eight samples are available.
+
+**Physics-informed hybrid.** `C = C_phys(θ) + r_φ(t)`, with a homogeneous-ODE residual
+penalty on the neural term.
+
+**Amortized inference.** A network trained on simulator draws to map an observed curve
+directly to parameters.
 
 **Training budget.** The amortized network is trained on
 [[results:manifest.json:metrics.amortized_n_train]] draws for
@@ -154,7 +161,8 @@ choice: at a thirty-second the network returns a constant, and at an eighth it r
 the prior mean of cardiac output to three figures. At the reported budget it tracks
 held-out cardiac output with correlation
 [[results:manifest.json:metrics.amortized_calibration_correlation|.3f]] and
-[[results:manifest.json:metrics.amortized_calibration_sd_ratio|.2f]] of the true spread.
+[[results:manifest.json:metrics.amortized_calibration_sd_ratio|.2f]] of the true spread
+(Figure 6).
 A comparison against an undertrained network is not a comparison against amortized
 inference, and this calibration is reported so a reader can see which was done.
 
@@ -199,8 +207,8 @@ simulation the difference is
 [[results:manifest.json:metrics.m1_closed_form_ode_nrmse|sci0]] relative — machine
 precision.
 
-The consequence is not a sampling problem. **Those five quantities cannot be recovered
-separately from enhancement at any density or noise level**, and the identifiability
+The consequence is not a sampling problem. Those five quantities cannot be recovered
+separately from enhancement at any density or noise level, and the identifiability
 analysis reaches rank
 [[results:m35_identifiability.json:clinical_designs.designs[n_phases=20].full_model_rank]] of
 [[results:m35_identifiability.json:clinical_designs.designs[n_phases=20].full_model_parameters]]
@@ -213,7 +221,7 @@ implicitly by taking physiology from body habitus.
 A pre-contrast acquisition carries no information about physiology: there is no contrast
 in the patient, the sensitivity is identically
 [[results:manifest.json:metrics.precontrast_sensitivity|.0f]], and a "two-phase" study is
-therefore **one** informative measurement. The rest of the phases are not equivalent
+therefore *one* informative measurement. The rest of the phases are not equivalent
 either. Taken alone, the arterial phase carries sensitivity
 [[results:manifest.json:metrics.arterial_sensitivity|.2f]], the portal venous phase
 [[results:manifest.json:metrics.portal_venous_sensitivity|.2f]] and the delayed phase
@@ -232,7 +240,7 @@ adding a delayed phase on top of that takes it only to
 [[results:m35_identifiability.json:clinical_designs.designs[n_phases=4].fitted_expected_absolute_error|.0%]],
 and twenty evenly spaced samples reach
 [[results:m35_identifiability.json:clinical_designs.designs[n_phases=20].fitted_expected_absolute_error|.0%]]
-(Figure 1, right). **No estimator does better than that**, whatever it is built from.
+(Figure 1, right). No estimator does better than that, whatever it is built from.
 
 The practical content is in the first step rather than the last. One extra acquisition,
 placed arterially, buys a fivefold reduction in the bound; the fourth phase buys almost
@@ -259,7 +267,8 @@ The physics-informed hybrid runs at
 [[results:manifest.json:metrics.endpoint_pinn_hybrid_efficiency|.2f]] and amortized
 inference at [[results:manifest.json:metrics.endpoint_amortized_efficiency|.2f]].
 
-In the most degraded design the three are not distinguishable by parameter error —
+Figure 5 plots the same comparison against noise level and Figure 4 the organ
+curve each estimator reconstructs. In the most degraded design the three are not distinguishable by parameter error —
 [[results:manifest.json:metrics.m2_stressed_closed_form_param_rmse|.2f]],
 [[results:manifest.json:metrics.m2_stressed_pinn_hybrid_param_rmse|.2f]] and
 [[results:manifest.json:metrics.m2_stressed_amortized_param_rmse|.2f]] root-mean-square
@@ -275,7 +284,7 @@ Physics-only and hybrid reach
 [[results:manifest.json:metrics.m3_ablation_physics_aif|.2f]] and
 [[results:manifest.json:metrics.m3_ablation_hybrid_aif|.2f]] curve NRMSE with the
 arterial input. Neural-only reaches
-[[results:manifest.json:metrics.m3_ablation_neural_aif|.2f]]: without the physics the
+[[results:manifest.json:metrics.m3_ablation_neural_aif|.2f]] (Figure 7): without the physics the
 residual network is not a curve fitter at this budget. The information the hybrid uses
 comes from the compartment model, not from the network.
 
@@ -285,7 +294,7 @@ On [[results:manifest.json:metrics.m3_tcia_n_cases]] patients the closed-form fi
 reaches curve NRMSE
 [[results:manifest.json:metrics.m3_tcia_closed_form_nrmse_mean|.3f]] against
 [[results:manifest.json:metrics.m3_tcia_pinn_nrmse_mean|.3f]] for the physics-informed
-hybrid. There is no ground-truth physiology on real data, so this is a statement about
+hybrid (Figure 8). There is no ground-truth physiology on real data, so this is a statement about
 curve reconstruction and not about parameter recovery — which is the distinction the rest
 of the paper exists to draw.
 
