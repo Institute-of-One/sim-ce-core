@@ -264,9 +264,7 @@ def aggregate_cells(rows: Sequence[dict[str, Any]]) -> list[dict[str, Any]]:
             dtype=np.float64,
         )
         errors = errors[np.isfinite(errors)]
-        curves = np.array(
-            [float(m["curve_nrmse"]) for m in members], dtype=np.float64
-        )
+        curves = np.array([float(m["curve_nrmse"]) for m in members], dtype=np.float64)
         curves = curves[np.isfinite(curves)]
         out.append(
             {

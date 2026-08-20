@@ -66,9 +66,7 @@ def bound_for(
 ) -> dict[str, Any]:
     """Cramer-Rao bounds for one design, and the mean-absolute-error comparator."""
     values = {name: float(getattr(physiology, name)) for name in parameter_names}
-    sensitivity = jacobian(
-        physiology, protocol, times, parameter_names=parameter_names
-    )
+    sensitivity = jacobian(physiology, protocol, times, parameter_names=parameter_names)
     result = analyse(
         fisher_information(sensitivity, values, sigma_hu=sigma_hu), parameter_names
     )

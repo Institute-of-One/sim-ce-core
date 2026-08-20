@@ -174,6 +174,12 @@ def save_scatter_plot(
     plt.close(fig)
 
 
+#: Total characters of category label a 7.2 in horizontal axis carries before the ticks
+#: start colliding. Measured rather than guessed: the ablation figure has 97 and was
+#: unreadable; the external figure has fewer and is not.
+_TICK_LABEL_BUDGET = 60
+
+
 def save_bar_plot(
     labels: Sequence[str],
     values: Sequence[float],
@@ -183,21 +189,95 @@ def save_bar_plot(
     ylabel: str,
     yerr: Sequence[float] | None = None,
 ) -> None:
-    """Single-series bar chart (Fig 3 / ablations)."""
+    """Single-series bar chart, horizontal when the category names are long.
+
+    Six ablation arms named ``physics_only/AIF-free`` and the like come to 97 characters
+    of tick label across a 7.2 in axis, and they overlapped into an unreadable band in
+    the submitted PDF. Turning the bars on their side gives every name a line of its own
+    and needs no rotation, no abbreviation and no shrinking of the type. The switch is
+    by measured label width rather than by an argument, because the caller that
+    overflows is exactly the caller that would forget to pass one.
+    """
     path.parent.mkdir(parents=True, exist_ok=True)
-    fig, ax = plt.subplots(figsize=(7.2, 4.2), layout="constrained")
     colors = [_PALETTE[i % len(_PALETTE)] for i in range(len(labels))]
-    ax.bar(
-        list(labels),
-        list(values),
-        yerr=None if yerr is None else list(yerr),
-        color=colors,
-        edgecolor="none",
-        capsize=4,
-    )
+    horizontal = sum(len(str(label)) for label in labels) > _TICK_LABEL_BUDGET
+
+    if horizontal:
+        height = max(2.6, 0.42 * len(labels) + 1.2)
+        fig, ax = plt.subplots(figsize=(7.2, height), layout="constrained")
+        positions = range(len(labels))
+        ax.barh(
+            list(positions),
+            list(values),
+            xerr=None if yerr is None else list(yerr),
+            color=colors,
+            edgecolor="none",
+            capsize=4,
+        )
+        ax.set_yticks(list(positions))
+        ax.set_yticklabels(list(labels))
+        ax.invert_yaxis()  # first category at the top, as the list reads
+        ax.set_xlabel(ylabel)
+    else:
+        fig, ax = plt.subplots(figsize=(7.2, 4.2), layout="constrained")
+        ax.bar(
+            list(labels),
+            list(values),
+            yerr=None if yerr is None else list(yerr),
+            color=colors,
+            edgecolor="none",
+            capsize=4,
+        )
+        ax.set_ylabel(ylabel)
+
+    ax.set_title(title)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    fig.savefig(path, dpi=150)
+    plt.close(fig)
+
+
+def save_paired_case_plot(
+    cases: Sequence[str],
+    series: dict[str, Sequence[float]],
+    path: Path,
+    *,
+    title: str,
+    ylabel: str,
+) -> None:
+    """One point per case per method, paired by case, on a log axis.
+
+    Replaces a mean-and-standard-deviation bar. On this cohort the standard deviation
+    exceeds the mean for both methods, so a symmetric error bar reached below zero --
+    drawing a negative curve NRMSE, which cannot occur. A distribution bounded below at
+    zero and skewed above it is not described by two numbers, and the twenty cases fit
+    on the page.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fig, ax = plt.subplots(figsize=(7.2, 4.0), layout="constrained")
+    positions = np.arange(len(cases), dtype=float)
+
+    names = list(series)
+    for index, name in enumerate(names):
+        values = np.asarray(series[name], dtype=float)
+        ax.plot(
+            positions,
+            np.clip(values, 1e-6, None),
+            marker="o",
+            ms=5,
+            ls="none",
+            alpha=0.85,
+            color=_PALETTE[index % len(_PALETTE)],
+            label=name,
+        )
+
+    ax.set_yscale("log")
+    ax.set_xticks(positions)
+    ax.set_xticklabels(cases, rotation=90, fontsize=7)
     ax.set_ylabel(ylabel)
     ax.set_title(title)
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
+    ax.legend(fontsize=8, frameon=False)
     fig.savefig(path, dpi=150)
     plt.close(fig)

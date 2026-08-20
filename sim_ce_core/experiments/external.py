@@ -17,14 +17,19 @@ from sim_ce_core.physio.fit import recover_parameters
 from sim_ce_core.physio.forward import simulate_hu
 from sim_ce_core.physio.params import InjectionProtocol, PhysioParams
 from sim_ce_core.report.figures import (
-    save_bar_plot,
     save_overlay_plot,
+    save_paired_case_plot,
     save_rows_csv,
 )
 from sim_ce_core.repro import seed_everything
 from sim_ce_core.validate.deconvolution import reconstruct_organ
 from sim_ce_core.validate.metrics import mean_relative_error, nrmse
 from sim_ce_core.validate.sweeps import default_ls_init, interpolate_to
+
+#: Below this a curve fit has not fitted, it has interpolated. On two-phase cases the
+#: closed form passes exactly through the one informative measurement, and a residual at
+#: machine precision is the signature of that rather than of accuracy.
+EXACT_FIT_NRMSE = 1e-9
 
 
 def _observed_regions(use_aif: bool) -> tuple[str, ...]:
@@ -220,14 +225,56 @@ def run_external_experiment(cfg: Any, output_dir: Path) -> dict[str, Any]:
     save_rows_csv(rows, output_dir / "fig3_external.csv")
     curve_stats = _summarize(rows, "curve_nrmse")
     methods = sorted(curve_stats)
-    save_bar_plot(
-        methods,
-        [curve_stats[m]["mean"] for m in methods],
+    by_case: dict[str, dict[str, float]] = {}
+    for row in rows:
+        by_case.setdefault(str(row["case_id"]), {})[str(row["method"])] = float(
+            row["curve_nrmse"]
+        )
+    cases = sorted(by_case)
+    # A fit whose residual is at machine precision has not fitted well; it has
+    # interpolated. Two-phase cases carry one informative measurement -- the
+    # pre-contrast phase has no contrast in it -- against two free parameters, so the
+    # model passes through the data exactly and scores zero error. Averaging those in
+    # with the constrained cases is how the closed form came to look better than it is.
+    exact = {
+        method: sorted(
+            case
+            for case in cases
+            if abs(by_case[case].get(method, float("nan"))) < EXACT_FIT_NRMSE
+        )
+        for method in methods
+    }
+    constrained = {
+        method: [
+            by_case[case][method]
+            for case in cases
+            if method in by_case[case] and abs(by_case[case][method]) >= EXACT_FIT_NRMSE
+        ]
+        for method in methods
+    }
+    save_paired_case_plot(
+        cases,
+        {
+            method: [by_case[case].get(method, float("nan")) for case in cases]
+            for method in methods
+        },
         output_dir / "fig3_external_nrmse.png",
-        title="External validation: curve NRMSE (mean ± SD)",
+        title="External validation: curve NRMSE per case",
         ylabel="Curve NRMSE",
-        yerr=[curve_stats[m]["std"] for m in methods],
     )
+    underdetermined = {
+        "threshold_nrmse": EXACT_FIT_NRMSE,
+        "exact_fits": {method: len(cases_) for method, cases_ in exact.items()},
+        "n_cases": len(cases),
+        "constrained_mean_nrmse": {
+            method: (float(np.mean(values)) if values else None)
+            for method, values in constrained.items()
+        },
+        "n_constrained": {
+            method: len(values) for method, values in constrained.items()
+        },
+    }
+
     example = cohort[0]
     example_pinn = next(
         r
@@ -260,4 +307,5 @@ def run_external_experiment(cfg: Any, output_dir: Path) -> dict[str, Any]:
         "fig3": str(output_dir / "fig3_external_nrmse.png"),
         "example_pinn_nrmse": example_pinn["curve_nrmse"],
         "n_phase_rows": len(phase_rows),
+        "underdetermined": underdetermined,
     }

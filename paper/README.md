@@ -44,7 +44,7 @@ the converted document, in two wordings.
 | Fig 5 | Parameter mean relative error against noise level for each estimator, at full dose, over 20 realisations per cell |
 | Fig 6 | Amortized inference on held-out synthetic physiology: predicted against true cardiac output, at the training budget the study reports. At a thirty-second of that budget the same panel is a horizontal line |
 | Fig 7 | Ablation on synthetic data: curve NRMSE for physics-only, hybrid and neural-only residuals, with and without the arterial input function |
-| Fig 8 | Curve NRMSE per patient on the 20 public multi-phase liver CTs, closed-form fit against physics-informed hybrid. There is no ground-truth physiology on real data, so this compares curve reconstruction and not parameter recovery |
+| Fig 8 | Curve NRMSE for each of the 20 public multi-phase liver CTs, closed-form fit against physics-informed hybrid, on a logarithmic axis. The thirteen closed-form points at the floor are exact interpolations rather than accurate fits: each is a two-phase case, carrying one informative measurement against two free parameters. There is no ground-truth physiology on real data, so this compares curve reconstruction and not parameter recovery |
 
 ## Data provenance
 

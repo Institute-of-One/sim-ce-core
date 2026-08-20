@@ -288,15 +288,37 @@ arterial input. Neural-only reaches
 residual network is not a curve fitter at this budget. The information the hybrid uses
 comes from the compartment model, not from the network.
 
-### 3.6 Real multi-phase CT
+### 3.6 Real multi-phase CT, and the same limit in the residuals
 
-On 20 patients the closed-form fit
-reaches curve NRMSE
+On 20 patients the closed-form fit reaches
+a mean curve NRMSE of
 0.045 against
 0.127 for the physics-informed
-hybrid (Figure 8). There is no ground-truth physiology on real data, so this is a statement about
-curve reconstruction and not about parameter recovery — which is the distinction the rest
+hybrid (Figure 8). Read as an accuracy comparison, that favours the classical fit by a
+factor of nearly three. It is not one.
+
+13 of the
+20 closed-form fits have a residual below
+1×10⁻⁹ — machine
+precision. They are not accurate fits; they are exact interpolations. Every one of them
+is a two-phase case, and a two-phase case carries one informative measurement, because
+the pre-contrast acquisition has no contrast in it (Section 3.2). One measurement against
+two free parameters is an underdetermined system, and the model passes through the datum
+exactly whatever the physiology was.
+
+On the 7 cases with three or more
+phases, where the data does constrain the fit, the two methods are
+indistinguishable: 0.127
+against 0.127. The apparent
+advantage of the closed form on real data was arithmetic — thirteen zeros pulling down a
+mean — and the sampling limit measured in Section 3.2 is visible in these residuals
+without any Fisher calculation at all.
+
+There is no ground-truth physiology on real data, so nothing here is a statement about
+parameter recovery. What it does show is that a curve reconstructed perfectly can carry
+no information about the parameters that generated it, which is the distinction the rest
 of the paper exists to draw.
+
 
 ## 4. Discussion
 

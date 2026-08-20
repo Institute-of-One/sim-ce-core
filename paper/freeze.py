@@ -106,6 +106,16 @@ def derive_metrics(loaded: dict[str, Any]) -> dict[str, Any]:
         "m3_tcia_n_phase_rows": tcia["n_phase_rows"],
         "m3_tcia_closed_form_nrmse_mean": tcia["curve_nrmse"]["closed_form"]["mean"],
         "m3_tcia_pinn_nrmse_mean": tcia["curve_nrmse"]["pinn_hybrid"]["mean"],
+        "m3_tcia_exact_fits": tcia["underdetermined"]["exact_fits"]["closed_form"],
+        "m3_tcia_n_constrained": tcia["underdetermined"]["n_constrained"][
+            "closed_form"
+        ],
+        "m3_tcia_constrained_closed_form": tcia["underdetermined"][
+            "constrained_mean_nrmse"
+        ]["closed_form"],
+        "m3_tcia_constrained_pinn": tcia["underdetermined"]["constrained_mean_nrmse"][
+            "pinn_hybrid"
+        ],
         "m3_ablation_physics_aif": ablation["mean_curve_nrmse"]["physics_only/AIF"],
         "m3_ablation_hybrid_aif": ablation["mean_curve_nrmse"]["hybrid/AIF"],
         "m3_ablation_neural_aif": ablation["mean_curve_nrmse"]["neural_only/AIF"],

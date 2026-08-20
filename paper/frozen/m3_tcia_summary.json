@@ -6,8 +6,8 @@
   ],
   "curve_nrmse": {
     "closed_form": {
-      "mean": 0.0445006987695515,
-      "std": 0.07048753732655126,
+      "mean": 0.04450069876955146,
+      "std": 0.07048753732655125,
       "n": 20.0
     },
     "pinn_hybrid": {
@@ -20,5 +20,21 @@
   "csv": "outputs\\m3_tcia\\fig3_external.csv",
   "fig3": "outputs\\m3_tcia\\fig3_external_nrmse.png",
   "example_pinn_nrmse": 0.010451678965501102,
-  "n_phase_rows": 53
+  "n_phase_rows": 53,
+  "underdetermined": {
+    "threshold_nrmse": 1e-09,
+    "exact_fits": {
+      "closed_form": 13,
+      "pinn_hybrid": 0
+    },
+    "n_cases": 20,
+    "constrained_mean_nrmse": {
+      "closed_form": 0.12714485362728925,
+      "pinn_hybrid": 0.12692618123300287
+    },
+    "n_constrained": {
+      "closed_form": 7,
+      "pinn_hybrid": 20
+    }
+  }
 }

@@ -288,15 +288,37 @@ arterial input. Neural-only reaches
 residual network is not a curve fitter at this budget. The information the hybrid uses
 comes from the compartment model, not from the network.
 
-### 3.6 Real multi-phase CT
+### 3.6 Real multi-phase CT, and the same limit in the residuals
 
-On [[results:manifest.json:metrics.m3_tcia_n_cases]] patients the closed-form fit
-reaches curve NRMSE
+On [[results:manifest.json:metrics.m3_tcia_n_cases]] patients the closed-form fit reaches
+a mean curve NRMSE of
 [[results:manifest.json:metrics.m3_tcia_closed_form_nrmse_mean|.3f]] against
 [[results:manifest.json:metrics.m3_tcia_pinn_nrmse_mean|.3f]] for the physics-informed
-hybrid (Figure 8). There is no ground-truth physiology on real data, so this is a statement about
-curve reconstruction and not about parameter recovery — which is the distinction the rest
+hybrid (Figure 8). Read as an accuracy comparison, that favours the classical fit by a
+factor of nearly three. It is not one.
+
+[[results:manifest.json:metrics.m3_tcia_exact_fits]] of the
+[[results:manifest.json:metrics.m3_tcia_n_cases]] closed-form fits have a residual below
+[[results:m3_tcia_summary.json:underdetermined.threshold_nrmse|sci0]] — machine
+precision. They are not accurate fits; they are exact interpolations. Every one of them
+is a two-phase case, and a two-phase case carries one informative measurement, because
+the pre-contrast acquisition has no contrast in it (Section 3.2). One measurement against
+two free parameters is an underdetermined system, and the model passes through the datum
+exactly whatever the physiology was.
+
+On the [[results:manifest.json:metrics.m3_tcia_n_constrained]] cases with three or more
+phases, where the data does constrain the fit, the two methods are
+indistinguishable: [[results:manifest.json:metrics.m3_tcia_constrained_closed_form|.3f]]
+against [[results:manifest.json:metrics.m3_tcia_constrained_pinn|.3f]]. The apparent
+advantage of the closed form on real data was arithmetic — thirteen zeros pulling down a
+mean — and the sampling limit measured in Section 3.2 is visible in these residuals
+without any Fisher calculation at all.
+
+There is no ground-truth physiology on real data, so nothing here is a statement about
+parameter recovery. What it does show is that a curve reconstructed perfectly can carry
+no information about the parameters that generated it, which is the distinction the rest
 of the paper exists to draw.
+
 
 ## 4. Discussion
 

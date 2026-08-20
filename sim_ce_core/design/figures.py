@@ -87,9 +87,7 @@ def figure_identifiability_map(path: Path, design: dict[str, Any]) -> Path:
 
         bounds = [row["fitted_expected_absolute_error"] for row in rows]
         right.bar(positions, bounds, color="#E45756", alpha=0.85)
-        right.axhline(
-            0.20, color="0.35", ls=":", lw=1.0, label="20% relative error"
-        )
+        right.axhline(0.20, color="0.35", ls=":", lw=1.0, label="20% relative error")
         right.set_yscale("log")
         right.set_ylabel("Cramer-Rao bound (relative)")
         right.set_title("Two fitted parameters: the bound", fontsize=9)
