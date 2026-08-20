@@ -129,6 +129,83 @@ def keep_tables_whole(path: Path) -> Path:
     return path
 
 
+#: The footer part, holding a centred PAGE field. Word evaluates the field on open; the
+#: literal "1" is what a reader sees before it does.
+_FOOTER_XML = (
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'
+    '<w:ftr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+    '<w:p><w:pPr><w:jc w:val="center"/></w:pPr>'
+    '<w:r><w:fldChar w:fldCharType="begin"/></w:r>'
+    '<w:r><w:instrText xml:space="preserve"> PAGE </w:instrText></w:r>'
+    '<w:r><w:fldChar w:fldCharType="separate"/></w:r>'
+    "<w:r><w:t>1</w:t></w:r>"
+    '<w:r><w:fldChar w:fldCharType="end"/></w:r>'
+    "</w:p></w:ftr>"
+)
+
+_FOOTER_PART = "word/footer1.xml"
+_FOOTER_RELATIONSHIP = "rIdPageFooter"
+_FOOTER_TYPE = (
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"
+)
+
+#: Continuous line numbering down the left margin, every line, restarting never.
+#: ``distance`` is twentieths of a point: 360 is a quarter inch clear of the text.
+_LINE_NUMBERING = '<w:lnNumType w:countBy="1" w:restart="continuous" w:distance="360"/>'
+
+
+def number_pages_and_lines(path: Path) -> Path:
+    """Add page numbers and continuous line numbering to a written ``.docx``.
+
+    Medical Physics returned a companion submission before peer review for the want of
+    both. Elsevier recommends line numbering rather than requiring it, but the cost of
+    carrying it is nothing and the cost of discovering it at the desk is a round trip.
+
+    Pandoc emits neither and no reference document supplies them. Line numbering is one
+    section property; a page number needs a footer part carrying a PAGE field, a
+    content-type override, a relationship, and a reference to it from the section. Order
+    inside ``sectPr`` is fixed by the schema -- ``footerReference`` before
+    ``footnotePr``, ``lnNumType`` after -- and Word rejects the part if they are
+    reversed.
+    """
+    with zipfile.ZipFile(path) as archive:
+        names = archive.namelist()
+        contents = {name: archive.read(name) for name in names}
+
+    document = contents["word/document.xml"].decode("utf-8")
+    if "lnNumType" in document:
+        return path
+
+    reference = f'<w:footerReference w:type="default" r:id="{_FOOTER_RELATIONSHIP}"/>'
+    document = document.replace("<w:sectPr>", f"<w:sectPr>{reference}", 1)
+    document = document.replace(
+        "</w:footnotePr>", f"</w:footnotePr>{_LINE_NUMBERING}", 1
+    )
+    contents["word/document.xml"] = document.encode("utf-8")
+
+    rels = contents["word/_rels/document.xml.rels"].decode("utf-8")
+    relationship = (
+        f'<Relationship Id="{_FOOTER_RELATIONSHIP}" Type="http://schemas.openxmlformats'
+        '.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/>'
+    )
+    rels = rels.replace("</Relationships>", f"{relationship}</Relationships>", 1)
+    contents["word/_rels/document.xml.rels"] = rels.encode("utf-8")
+
+    types = contents["[Content_Types].xml"].decode("utf-8")
+    override = f'<Override PartName="/{_FOOTER_PART}" ContentType="{_FOOTER_TYPE}"/>'
+    types = types.replace("</Types>", f"{override}</Types>", 1)
+    contents["[Content_Types].xml"] = types.encode("utf-8")
+
+    contents[_FOOTER_PART] = _FOOTER_XML.encode("utf-8")
+
+    temporary = path.with_suffix(".docx.tmp")
+    with zipfile.ZipFile(temporary, "w", zipfile.ZIP_DEFLATED) as archive:
+        for name in [*names, _FOOTER_PART]:
+            archive.writestr(name, contents[name])
+    shutil.move(str(temporary), str(path))
+    return path
+
+
 def build(output: Path = DEFAULT_OUTPUT) -> int:
     import pypandoc  # noqa: PLC0415
 
@@ -148,6 +225,7 @@ def build(output: Path = DEFAULT_OUTPUT) -> int:
         extra_args=["--resource-path", str(PAPER)],
     )
     keep_tables_whole(output)
+    number_pages_and_lines(output)
     print(f"wrote {output} ({output.stat().st_size // 1024} KB)")
     return 0
 

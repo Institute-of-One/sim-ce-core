@@ -282,6 +282,30 @@ def check_cover_letter() -> None:
         fail("the cover letter does not quote the manuscript's title verbatim")
 
 
+# ---------------------------------------------------------------- submission format
+def check_submission_format() -> None:
+    """Page numbers and line numbering, in the file that is actually uploaded.
+
+    A companion submission was returned before peer review for the want of both. Every
+    other check here reads the markdown, where the numbers and the prose live, and never
+    the artefact that reaches the editor -- and page furniture exists only in the
+    artefact.
+    """
+    import zipfile  # noqa: PLC0415
+
+    path = PAPER / "build" / "manuscript.docx"
+    if not path.exists():
+        warn("manuscript.docx has not been built")
+        return
+    with zipfile.ZipFile(path) as archive:
+        document = archive.read("word/document.xml").decode("utf-8")
+        parts = archive.namelist()
+    if "lnNumType" not in document:
+        fail("manuscript.docx has no line numbering")
+    if not any(part.startswith("word/footer") for part in parts):
+        fail("manuscript.docx has no footer, so no page numbers")
+
+
 # ---------------------------------------------------------------- provenance
 def check_provenance() -> None:
     """The external arm must be the real cohort and not the synthetic proxy."""
@@ -309,6 +333,7 @@ def main(argv: list[str] | None = None) -> int:
     check_figures(src)
     check_built(built)
     check_cover_letter()
+    check_submission_format()
     check_provenance()
 
     for message in warnings:
