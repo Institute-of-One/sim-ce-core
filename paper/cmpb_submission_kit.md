@@ -1,6 +1,7 @@
 # CMPB submission kit — IORN-008 (sim_ce_core)
 
-Target: *Computer Methods and Programs in Biomedicine* (Elsevier), **Original Research**.
+Target: *Computer Methods and Programs in Biomedicine* (Elsevier), **Full Length
+Article** (the portal's name for an original research paper).
 Submission through Editorial Manager. Single-anonymised review; the editors screen first
 and, if suitable, send to a minimum of two reviewers.
 
@@ -47,7 +48,14 @@ A rejection leaves the manuscript intact for the next venue, which a demotion do
 
 ## Editorial Manager field answers
 
-**Article type.** Original Research.
+**Article type.** **Full Length Article** — the portal's name for it. The submission
+form does not use the phrase "Original Research"; the options are Full Length Article,
+Review Article, Correspondence, and two AI Radiomics special-issue variants.
+
+Do not choose either special-issue variant. This paper is not radiomics: it extracts no
+texture or shape features. And its finding is that neural estimators do not beat the
+classical one in this regime, which is a poor fit for an AI special issue and its guest
+editors.
 
 **Title.** Sampling design bounds contrast-kinetics parameter recovery from CT, and a
 closed-form fit attains the bound
