@@ -4,7 +4,7 @@
      Do not type a number into this file. If a value is not reachable from a frozen
      file, add it to the freeze rather than typing it here. -->
 
-# Sampling design bounds contrast-kinetics parameter recovery from CT, and a closed-form fit attains the bound
+# Sampling design bounds parameter recovery in a reduced CT contrast-kinetics model, and a closed-form fit nearly attains the bound
 
 **Shuji Yamamoto**
 Institute of One, LISIT Co., Ltd., Tokyo, Japan
@@ -12,39 +12,39 @@ yamamoto@lisit.jp · ORCID 0000-0001-9211-1071
 
 ## Abstract
 
-**Background and Objectives.** Physics-informed and amortized neural estimators are
-increasingly applied to contrast-kinetics and perfusion models. Whether they can recover
-physiology from the two to four phases a routine contrast-enhanced CT acquires has not
-been established, and reconstructing a curve is not the same as determining the
-parameters that generated it. We asked what a phase pattern determines, and whether that
-limit predicts the error estimators actually make.
+**Background and Objectives.** Neural estimators are increasingly applied to
+contrast-kinetics models, but whether physiology is recoverable from the two to four
+phases a routine contrast-enhanced CT acquires is unestablished. We asked what a phase pattern determines, and whether that limit predicts
+estimator error.
 
 **Methods.** A differentiable three-compartment Bae-style model gives the sensitivity
-matrix in closed form. From it we compute the Fisher information of an acquisition
-schedule and the Cramér–Rao bound on each parameter, in log space so the bound reads as
-a relative standard error. Four estimators — closed-form least squares, Tikhonov
-deconvolution, a physics-informed residual, and amortized inference — were run over a
-grid of noise, temporal stride and dose, each cell repeated over
-[[results:manifest.json:metrics.m2_n_realisations]] independent noise draws, and on
-[[results:manifest.json:metrics.m3_tcia_n_cases]] public multi-phase liver CTs.
+matrix in closed form, and from it the Fisher information of an acquisition schedule and
+the Cramér–Rao bound on each parameter, as a relative standard error. Closed-form least
+squares, Tikhonov deconvolution, a physics-informed residual and
+amortized inference ran over [[results:m2_summary.json:n_cells]] designs of noise, stride
+and dose, each repeated over [[results:manifest.json:metrics.m2_n_realisations]] noise
+draws, and on [[results:manifest.json:metrics.m3_tcia_n_cases]] public multi-phase liver
+CTs.
 
-**Results.** The model has an exact scale symmetry: three volumes, cardiac output and
-the attenuation constant scale together with no effect on any enhancement curve, so a
-seven-parameter physiology is never identifiable from enhancement, at any sampling
-density. Given the fixings that break it, the bound of a design predicts measured
-recovery error across
-[[results:manifest.json:metrics.endpoint_n_cells]] designs — Spearman
-[[results:manifest.json:metrics.endpoint_closed_form_spearman|.2f]] to
-[[results:manifest.json:metrics.endpoint_pinn_hybrid_spearman|.2f]],
-p ≤ [[results:manifest.json:metrics.endpoint_closed_form_p|.4f]]. The closed-form fit
-attains it (median error/bound
-[[results:manifest.json:metrics.endpoint_closed_form_efficiency|.2f]]); the neural
-estimators do not
-([[results:manifest.json:metrics.endpoint_pinn_hybrid_efficiency|.2f]] and
-[[results:manifest.json:metrics.endpoint_amortized_efficiency|.2f]]).
+**Results.** Scaling three volumes, cardiac output and the attenuation constant together
+leaves every enhancement curve unchanged, so the full physiology is never identifiable at any density. With those fixed, the bound predicts measured error across the
+[[results:manifest.json:metrics.endpoint_n_cells]] nonzero-noise designs (Spearman
+[[results:manifest.json:metrics.endpoint_closed_form_spearman|.2f]]–[[results:manifest.json:metrics.endpoint_pinn_hybrid_spearman|.2f]],
+p ≤ [[results:manifest.json:metrics.endpoint_closed_form_p|.4f]]). The closed-form fit
+runs at a median [[results:manifest.json:metrics.endpoint_closed_form_efficiency|.2f]]
+times the bound, the neural estimators at
+[[results:manifest.json:metrics.endpoint_pinn_hybrid_efficiency|.2f]] and
+[[results:manifest.json:metrics.endpoint_amortized_efficiency|.2f]]. On real CT,
+[[results:manifest.json:metrics.m3_tcia_exact_fits]] of
+[[results:manifest.json:metrics.m3_tcia_n_cases]] studies are two-phase, carrying one informative
+measurement, which the closed form interpolates exactly; on the
+[[results:manifest.json:metrics.m3_tcia_n_constrained]] with three or more phases both
+methods reach [[results:manifest.json:metrics.m3_tcia_constrained_closed_form|.3f]].
+Ground-truth physiology is absent there; parameter recovery is not claimed on
+real data.
 
-**Conclusions.** What limits parameter recovery here is the acquisition, not the
-estimator.
+**Conclusions.** In this reduced model and sampling regime the acquisition, not estimator
+complexity, set the recoverable information.
 
 **Keywords:** contrast enhancement; pharmacokinetic modelling; identifiability; Fisher
 information; optimal experimental design; physics-informed neural networks; computed
@@ -358,8 +358,8 @@ Gaussian in HU.
 For contrast-kinetics recovery from routine multi-phase CT, the binding constraint is the
 sampling design. Its Cramér–Rao bound predicts measured error across designs and
 estimators, and a closed-form least-squares fit attains it. Physics-informed and
-amortized estimators, trained to a budget at which they demonstrably use their input, run
-at one and a half to seven-tenths again that error. Effort spent on the estimator is
+amortized estimators, trained to a budget at which they demonstrably use their input,
+operated at [[results:manifest.json:metrics.endpoint_pinn_hybrid_efficiency|.2f]] and [[results:manifest.json:metrics.endpoint_amortized_efficiency|.2f]] times the bound respectively. Effort spent on the estimator is
 spent where the limit is not.
 
 ## Data and code

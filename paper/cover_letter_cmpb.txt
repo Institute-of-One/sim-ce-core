@@ -1,7 +1,6 @@
 Dear Editors,
 
-I am submitting "Sampling design bounds contrast-kinetics parameter recovery from CT, and
-a closed-form fit attains the bound" for consideration as Original Research in Computer
+I am submitting "Sampling design bounds parameter recovery in a reduced CT contrast-kinetics model, and a closed-form fit nearly attains the bound" for consideration as Original Research in Computer
 Methods and Programs in Biomedicine.
 
 Physics-informed and amortized neural estimators are now routinely applied to
@@ -30,10 +29,19 @@ predicts measured recovery error across eight sampling designs, each repeated ov
 independent noise draws, with Spearman correlations of 0.95 to 0.98 (p ≤ 0.0003) and the
 same for all three estimators.
 
-Fourth, the closed-form least-squares fit attains that bound, at a median 1.07 times it.
-The physics-informed hybrid runs at 1.52 and amortized inference at 1.72. What limits
-recovery here is the acquisition, not the estimator, and the classical estimator already
-extracts what the acquisition contains.
+Fourth, the closed-form least-squares fit comes within 7% of that bound, at a median
+1.07 times it. The physics-informed hybrid runs at 1.52 and amortized inference at 1.72.
+What limits recovery here is the acquisition, not the estimator, and the classical
+estimator already extracts most of what the acquisition contains.
+
+The same limit is visible in the real data without any Fisher calculation. Thirteen of
+the twenty public multi-phase studies are two-phase, and a two-phase study carries one
+informative measurement because a pre-contrast acquisition has no contrast in it. On
+every one of those the closed form interpolates the datum exactly, at machine precision,
+which is the signature of an underdetermined fit rather than of accuracy. On the seven
+studies with three or more phases the closed form and the physics-informed hybrid are
+indistinguishable, both at 0.127 curve NRMSE. The closed form's apparent three-fold
+advantage across all twenty was thirteen zeros pulling down a mean.
 
 I want to be explicit about what is not claimed. Applying physics-informed networks to
 contrast kinetics is prior art and is cited as such; Fisher-information-based experimental

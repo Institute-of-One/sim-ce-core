@@ -13,17 +13,25 @@ demoted elsewhere.
 
 ## Build
 
+Run the experiments, then rebuild every artefact with one command:
+
 ```bash
 python -m sim_ce_core.experiments.run configs/m1_synthetic.yaml
 python -m sim_ce_core.experiments.run configs/m2_robustness.yaml
 python -m sim_ce_core.experiments.run configs/m3_tcia.yaml
 python -m sim_ce_core.experiments.run configs/m3_ablation.yaml
 python -m sim_ce_core.experiments.identifiability_map
-python paper/freeze.py
-python paper/collect_figures.py
-python paper/build_manuscript.py
-python paper/presubmission_check.py     # must print "ready to submit"
+
+python paper/build_all.py     # must end "every artefact rebuilt and checked"
 ```
+
+`build_all` freezes the runs, collects the figures, resolves the manuscript, renders the
+Word file, builds the highlights, the interest declaration and the cover letter, writes
+the plain-text title and abstract for the portal, and runs the checks in `--strict`.
+Rebuilding one artefact and forgetting another is how a copy goes stale, and every copy
+in this programme has gone stale at least once: a cover letter that kept a withdrawn
+claim, a submission form three weeks behind the abstract, a kit naming a title the paper
+no longer had.
 
 Every number in `paper/manuscript.md` is a `[[results:...]]` marker resolved from
 `paper/frozen/` at build time. A marker that cannot be resolved is a build error, and a

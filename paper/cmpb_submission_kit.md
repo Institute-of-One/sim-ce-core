@@ -36,7 +36,7 @@ A rejection leaves the manuscript intact for the next venue, which a demotion do
 
 ## Requirements verified
 
-- **Abstract** — "concise and factual", **maximum 250 words**. Ours: 244.
+- **Abstract** — "concise and factual", **maximum 250 words**, checked at build.
 - **Structured headings** — Background and Objectives / Methods / Results / Conclusions.
 - **Keywords** — 7.
 - **References** — 13, every one carrying a DOI, all cited, all listed, in order of first
@@ -57,8 +57,11 @@ texture or shape features. And its finding is that neural estimators do not beat
 classical one in this regime, which is a poor fit for an AI special issue and its guest
 editors.
 
-**Title.** Sampling design bounds contrast-kinetics parameter recovery from CT, and a
-closed-form fit attains the bound
+**Title and abstract.** Do not retype them. `python paper/make_portal_fields.py` writes
+`paper/build/portal_fields.txt` from the built manuscript, as plain text with the
+citation numbers stripped — a bracketed number in an abstract field points at nothing.
+The portal's copy of the front matter is the half an editor reads first, and on the
+companion submission it went three weeks out of date without anything noticing.
 
 **Corresponding and sole author.** Shuji Yamamoto, Institute of One, LISIT Co., Ltd.,
 Tokyo, Japan. yamamoto@lisit.jp. ORCID 0000-0001-9211-1071.

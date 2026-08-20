@@ -4,7 +4,7 @@
      Do not type a number into this file. If a value is not reachable from a frozen
      file, add it to the freeze rather than typing it here. -->
 
-# Sampling design bounds contrast-kinetics parameter recovery from CT, and a closed-form fit attains the bound
+# Sampling design bounds parameter recovery in a reduced CT contrast-kinetics model, and a closed-form fit nearly attains the bound
 
 **Shuji Yamamoto**
 Institute of One, LISIT Co., Ltd., Tokyo, Japan
@@ -12,39 +12,39 @@ yamamoto@lisit.jp · ORCID 0000-0001-9211-1071
 
 ## Abstract
 
-**Background and Objectives.** Physics-informed and amortized neural estimators are
-increasingly applied to contrast-kinetics and perfusion models. Whether they can recover
-physiology from the two to four phases a routine contrast-enhanced CT acquires has not
-been established, and reconstructing a curve is not the same as determining the
-parameters that generated it. We asked what a phase pattern determines, and whether that
-limit predicts the error estimators actually make.
+**Background and Objectives.** Neural estimators are increasingly applied to
+contrast-kinetics models, but whether physiology is recoverable from the two to four
+phases a routine contrast-enhanced CT acquires is unestablished. We asked what a phase pattern determines, and whether that limit predicts
+estimator error.
 
 **Methods.** A differentiable three-compartment Bae-style model gives the sensitivity
-matrix in closed form. From it we compute the Fisher information of an acquisition
-schedule and the Cramér–Rao bound on each parameter, in log space so the bound reads as
-a relative standard error. Four estimators — closed-form least squares, Tikhonov
-deconvolution, a physics-informed residual, and amortized inference — were run over a
-grid of noise, temporal stride and dose, each cell repeated over
-20 independent noise draws, and on
-20 public multi-phase liver CTs.
+matrix in closed form, and from it the Fisher information of an acquisition schedule and
+the Cramér–Rao bound on each parameter, as a relative standard error. Closed-form least
+squares, Tikhonov deconvolution, a physics-informed residual and
+amortized inference ran over 12 designs of noise, stride
+and dose, each repeated over 20 noise
+draws, and on 20 public multi-phase liver
+CTs.
 
-**Results.** The model has an exact scale symmetry: three volumes, cardiac output and
-the attenuation constant scale together with no effect on any enhancement curve, so a
-seven-parameter physiology is never identifiable from enhancement, at any sampling
-density. Given the fixings that break it, the bound of a design predicts measured
-recovery error across
-8 designs — Spearman
-0.95 to
-0.98,
-p ≤ 0.0003. The closed-form fit
-attains it (median error/bound
-1.07); the neural
-estimators do not
-(1.52 and
-1.72).
+**Results.** Scaling three volumes, cardiac output and the attenuation constant together
+leaves every enhancement curve unchanged, so the full physiology is never identifiable at any density. With those fixed, the bound predicts measured error across the
+8 nonzero-noise designs (Spearman
+0.95–0.98,
+p ≤ 0.0003). The closed-form fit
+runs at a median 1.07
+times the bound, the neural estimators at
+1.52 and
+1.72. On real CT,
+13 of
+20 studies are two-phase, carrying one informative
+measurement, which the closed form interpolates exactly; on the
+7 with three or more phases both
+methods reach 0.127.
+Ground-truth physiology is absent there; parameter recovery is not claimed on
+real data.
 
-**Conclusions.** What limits parameter recovery here is the acquisition, not the
-estimator.
+**Conclusions.** In this reduced model and sampling regime the acquisition, not estimator
+complexity, set the recoverable information.
 
 **Keywords:** contrast enhancement; pharmacokinetic modelling; identifiability; Fisher
 information; optimal experimental design; physics-informed neural networks; computed
@@ -358,8 +358,8 @@ Gaussian in HU.
 For contrast-kinetics recovery from routine multi-phase CT, the binding constraint is the
 sampling design. Its Cramér–Rao bound predicts measured error across designs and
 estimators, and a closed-form least-squares fit attains it. Physics-informed and
-amortized estimators, trained to a budget at which they demonstrably use their input, run
-at one and a half to seven-tenths again that error. Effort spent on the estimator is
+amortized estimators, trained to a budget at which they demonstrably use their input,
+operated at 1.52 and 1.72 times the bound respectively. Effort spent on the estimator is
 spent where the limit is not.
 
 ## Data and code

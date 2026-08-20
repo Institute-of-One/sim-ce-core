@@ -273,13 +273,43 @@ def check_cover_letter() -> None:
                 "renders as"
             )
 
+    _quotes_the_title(letter, "cover letter")
+
+
+def _quotes_the_title(text: str, where: str) -> None:
+    """Anything that names the paper must name the current one.
+
+    The title changed once during preparation and left two stale copies behind, of which
+    only the cover letter was guarded. Whitespace is normalised on both sides: the
+    manuscript's title wraps across two source lines and the letter's does not.
+    """
     title = next(
-        (line[2:].strip() for line in SOURCE.read_text(encoding="utf-8").splitlines()
-         if line.startswith("# ")),
+        (
+            line[2:].strip()
+            for line in SOURCE.read_text(encoding="utf-8").splitlines()
+            if line.startswith("# ")
+        ),
         "",
     )
-    if title and title not in " ".join(letter.split()):
-        fail("the cover letter does not quote the manuscript's title verbatim")
+    if title and " ".join(title.split()) not in " ".join(text.split()):
+        fail(f"the {where} does not quote the manuscript's title verbatim")
+
+
+def check_submission_kit() -> None:
+    """The kit records what goes in each form field, so it must not restate the paper.
+
+    It used to carry its own copy of the title, which went stale when the title changed
+    and which nothing checked. It now points at the generated portal fields instead.
+    """
+    kit = PAPER / "cmpb_submission_kit.md"
+    if not kit.exists():
+        warn("no submission kit")
+        return
+    if "make_portal_fields" not in kit.read_text(encoding="utf-8"):
+        fail(
+            "the kit restates the title and abstract instead of pointing at the "
+            "generated portal fields"
+        )
 
 
 # ---------------------------------------------------------------- submission format
@@ -333,6 +363,7 @@ def main(argv: list[str] | None = None) -> int:
     check_figures(src)
     check_built(built)
     check_cover_letter()
+    check_submission_kit()
     check_submission_format()
     check_provenance()
 
