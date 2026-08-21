@@ -376,6 +376,32 @@ def check_provenance() -> None:
         fail(f"the frozen external arm reads {source!r}, not the real TCIA cohort")
 
 
+def check_code_is_reachable(built: str) -> None:
+    """The data and code statement must name somewhere a reader can go.
+
+    IORN-008 was submitted to CMPB saying the software is "in this repository" and
+    naming no repository. Nothing else in the package -- not the cover letter, not the
+    highlights, not the portal fields -- carried a URL either, so a reviewer of a
+    computational paper had no route to the code at all. The provenance check above
+    confirmed the external arm was the real cohort and said nothing about whether
+    anyone could reach it.
+
+    A locator is a URL or a DOI. "this repository" is neither.
+    """
+    section = re.search(
+        r"^##\s*Data and code\s*$(.*?)(?=^##\s|\Z)", built, flags=re.M | re.S
+    )
+    if section is None:
+        fail("the manuscript has no 'Data and code' section")
+        return
+    body = section.group(1)
+    if not re.search(r"https?://|doi\.org|doi:", body):
+        fail(
+            "the data and code statement names no URL or DOI: a reviewer cannot "
+            "reach the software from the manuscript"
+        )
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--strict", action="store_true", help="warnings fail too")
@@ -398,6 +424,7 @@ def main(argv: list[str] | None = None) -> int:
     check_submission_kit()
     check_submission_format()
     check_provenance()
+    check_code_is_reachable(built)
 
     for message in warnings:
         print(f"  warn  {message}")
