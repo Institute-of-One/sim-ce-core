@@ -336,6 +336,37 @@ def check_submission_format() -> None:
         fail("manuscript.docx has no footer, so no page numbers")
 
 
+# ---------------------------------------------------------------- declarations
+#: Sections the publisher's guide requires in the manuscript itself, not only in the
+#: submission form. Their absence is invisible in the markdown and is exactly what an
+#: editorial office returns a submission for before peer review -- which is how a
+#: companion paper lost a round trip over page numbering.
+REQUIRED_SECTIONS = (
+    "Declaration of competing interest",
+    "Funding",
+    "Declaration of generative AI use",
+)
+
+
+def check_declarations(built: str) -> None:
+    """The three statements CMPB's guide asks for, in the order it asks for them."""
+    headings = [
+        line[3:].strip() for line in built.splitlines() if line.startswith("## ")
+    ]
+    for wanted in REQUIRED_SECTIONS:
+        if not any(heading.startswith(wanted) for heading in headings):
+            fail(f"the manuscript has no '{wanted}' section, which the guide requires")
+
+    # Elsevier asks for the generative-AI statement directly before the references.
+    if "References" in headings:
+        before = headings[headings.index("References") - 1]
+        if not before.startswith("Declaration of generative AI use"):
+            fail(
+                "the generative-AI declaration must sit directly before the "
+                f"references; {before!r} is there instead"
+            )
+
+
 # ---------------------------------------------------------------- provenance
 def check_provenance() -> None:
     """The external arm must be the real cohort and not the synthetic proxy."""
@@ -362,6 +393,7 @@ def main(argv: list[str] | None = None) -> int:
     check_numbers(src, built)
     check_figures(src)
     check_built(built)
+    check_declarations(built)
     check_cover_letter()
     check_submission_kit()
     check_submission_format()

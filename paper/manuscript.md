@@ -367,6 +367,23 @@ spent where the limit is not.
 Software under the MIT licence, with the frozen tables and the commands that regenerate
 every figure, in this repository. TCIA HCC-TACE-Seg is CC BY 4.0 [12,13].
 
+## Declaration of competing interest
+
+The author is Representative Director (Chief Executive Officer) of LISIT Co., Ltd. and
+Chief Executive Officer of TexelCraft OÜ; Institute of One is the open-research
+initiative of LISIT Co., Ltd. Neither company sells or licenses any product related to
+the subject of this manuscript, and the work used no client data and no patient data.
+Two further interests bear on the subject rather than on finance. The software the study
+runs on was written by the author, who is therefore both the implementer of the methods
+assessed and their assessor, as the Limitations state. And the manuscript argues for
+openly referenced validation while the author's research initiative is founded on
+releasing code and data openly. There are no other competing interests.
+
+## Funding
+
+This research did not receive any specific grant from funding agencies in the public,
+commercial, or not-for-profit sectors.
+
 ## Declaration of generative AI use
 
 Generative AI (Claude, Anthropic, through the Claude Code command-line tool) was used in
