@@ -1,22 +1,38 @@
 # sim_ce_core
 
-Differentiable, physics-informed **contrast-enhancement kinetics simulator** —
-a modern-AI generalization of Bae's CT contrast-enhancement model.
+A differentiable, physics-informed simulator of CT contrast-enhancement kinetics,
+built on a reduced descendant of Bae's compartmental model, together with the
+identifiability analysis it was written to support.
 
-## Hypothesis (this is an Original Article, not a Technical Note)
+## What this study found
 
-> **H1.** A physics-informed neural generalization of Bae's contrast-kinetics model reconstructs
-> time–enhancement curves and recovers physiological parameters from **sparse / low-dose / noisy**
-> sampling **more robustly** than (a) the classical closed-form Bae model and (b) standard deconvolution,
-> validated on ~20–30 public CT-perfusion / multi-phase-CT cases.
+**A sampling design's Fisher information predicts which physiological parameters can be
+recovered from it, and a closed-form fit very nearly reaches that limit.** The consequence
+is that on routine phase patterns there is little left for a better estimator to recover:
+the limit is in the sampling, not in the inverse method.
 
-## Why this is not a Technical Note
+- The reduced model carries an **exact continuous scale symmetry**, so no sampling density,
+  however dense, constrains all seven parameters.
+- Measured parameter error tracks the Cramér–Rao bound of the design that produced it,
+  and the closed-form estimator sits close to it (median ratio 1.07).
+- **The neural estimators do not beat the classical one**, and the analysis says why:
+  the information a routine design withholds is not recoverable by any unbiased estimator.
 
-A software-only reimplementation of a known pharmacokinetic model would be a Technical Note.
-This project is built around a **testable hypothesis (H1)** plus **external validation on real
-public CT data** (minimal 20–30 cases). The paper's spine is synthetic ground-truth recovery,
-robustness sweeps under sparse/noisy/low-dose sampling, and a small real-data confirmation —
-not the packaging of the simulator alone.
+This is a negative result about estimators and a positive one about design, and the
+mechanism — not the ranking — is the contribution.
+
+### Claims this project does *not* make
+
+Two claims from the v1 draft (2026-08-17) were **withdrawn** once they were tested properly,
+and are recorded here so the earlier framing is not mistaken for a result:
+
+| Withdrawn v1 claim | Why it did not survive |
+|---|---|
+| The PINN hybrid improves parameter error over closed-form Bae (0.12 vs 0.27) | One noise realisation per cell. Over 20 realisations the ordering reverses. |
+| Amortized inference gives the lowest curve NRMSE (0.30 vs 0.48) | The network was trained at a thirty-second of its budget and returned a near-constant prediction regardless of its input. |
+
+Novelty is claimed neither for applying physics-informed networks to contrast kinetics
+nor for Fisher-information-based experimental design, which is standard.
 
 Clinical cohorts stay minimal by design. Everything that can be checked against ground truth
 runs on **synthetic data with no download**. Real extracts are local NPZ/JSON; the v1
@@ -36,18 +52,20 @@ compartmental model of iodinated contrast enhancement:
 Bae's original clinical question — how injection rate, dose, and body size determine
 enhancement timing and magnitude — is preserved as the forward map
 `(protocol, physiology θ) → C(t)`. This package adds autodiff, a Neural-ODE / PINN residual
-(milestone M2), and amortized inference, then tests whether that generalization is *more
-robust* than closed-form Bae and deconvolution under degraded sampling (H1).
+and amortized inference, and uses the resulting differentiability to compute the sensitivity
+matrix and Fisher information of a sampling design in closed form — which is what the
+identifiability analysis rests on.
 
 ## Status (milestones)
 
 | Milestone | Scope |
 |-----------|--------|
-| **M0** | Repo scaffold, CI, hypothesis pinned |
+| **M0** | Repo scaffold, CI |
 | **M1** | Differentiable Bae-style forward core (closed-form + ODE) + synthetic generator |
 | **M2** | PINN / Neural-ODE + amortized inference; synthetic robustness sweeps (Fig 1–2) |
 | **M3** | Local CTP / multi-phase loaders, external validation (Fig 3), ablations |
-| **M4** (current) | Write-up, figure/CSV freeze, JOSS paper, reproducibility check |
+| **M3.5** | Sensitivity, Fisher information and identifiability of a sampling design |
+| **M4** (current) | Write-up, figure/CSV freeze, reproducibility check |
 
 ## Installation
 
@@ -133,16 +151,26 @@ python -m sim_ce_core.experiments.run configs/m1_synthetic.yaml
 python -m sim_ce_core.experiments.run configs/m2_robustness.yaml
 python -m sim_ce_core.experiments.run configs/m3_tcia.yaml
 python -m sim_ce_core.experiments.run configs/m3_ablation.yaml
-python -m sim_ce_core.experiments.repro_check
+python -m sim_ce_core.experiments.identifiability_map
+
+python paper/build_all.py
 ```
 
-Manuscripts: `paper/paper.md` (JOSS) and `paper/research_article.md` (PMB / MedPhys draft).
+`build_all.py` freezes the runs, resolves every number in the manuscript from those frozen
+results, and rebuilds each submission artefact in dependency order. Manuscript:
+`paper/manuscript.md`; see `paper/README.md`. A JOSS software description is in
+`paper/paper.md`.
 
-**H1, honestly:** under synthetic stress (25 HU noise, stride 4, half dose) PINN
-hybrid improves parameter MRE vs closed-form Bae (0.12 vs 0.27) and amortized
-inference improves curve NRMSE (0.30 vs 0.48). On 20 real multi-phase TCIA cases,
-closed-form Bae fits sparse phases better than a short PINN (NRMSE 0.045 vs 0.127).
-That mixed result is the v1 claim — not a blanket win for the neural residual.
+**The real-data numbers, read correctly.** Across 20 public multi-phase liver CTs the
+closed-form fit reaches a mean curve NRMSE of 0.045 against the hybrid's 0.127, but that
+comparison is not what it looks like: **13 of the 20 closed-form fits are exact
+interpolations, not accurate fits.** Each is a two-phase case carrying one informative
+measurement against two free parameters. On the seven cases that actually constrain the
+fit the two are indistinguishable — 0.127 against 0.127. There is no ground-truth
+physiology on real data, so this compares curve reconstruction and not parameter recovery.
+
+In the ablation, physics-only and hybrid residuals are equivalent (NRMSE 0.041 and 0.043)
+while the neural-only residual fails outright (0.95).
 
 ## Citation
 

@@ -168,7 +168,7 @@ def build(*, check: bool = False) -> int:
             loaded[name] = json.loads(payload.decode("utf-8"))
 
     manifest = {
-        "hypothesis": "H1",
+        "superseded_hypothesis": "H1, tested and not supported; see README",
         "reproduce_figures": _reproduce_order(),
         "primary_endpoint": (
             "Whether the Fisher information of a sampling design predicts which "

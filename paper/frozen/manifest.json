@@ -1,5 +1,5 @@
 {
-  "hypothesis": "H1",
+  "superseded_hypothesis": "H1, tested and not supported; see README",
   "reproduce_figures": [
     "python -m sim_ce_core.experiments.run configs/m1_synthetic.yaml",
     "python -m sim_ce_core.experiments.run configs/m2_robustness.yaml",

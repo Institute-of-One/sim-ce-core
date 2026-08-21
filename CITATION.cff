@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: If you use this software, please cite it using these metadata.
-title: "sim_ce_core: a differentiable physics-informed simulator of contrast-enhancement kinetics"
+title: "sim_ce_core: a differentiable simulator of CT contrast-enhancement kinetics with Fisher-information identifiability analysis"
 type: software
 version: 0.1.0
 date-released: "2026-08-17"
@@ -14,11 +14,16 @@ authors:
     orcid: "https://orcid.org/0000-0001-9211-1071"
     affiliation: Institute of One, LISIT Co., Ltd., Tokyo, Japan
 abstract: >
-  A differentiable, physics-informed neural forward simulator of contrast-agent
-  enhancement kinetics that generalizes Bae's compartmental CT-enhancement model.
+  A differentiable simulator of contrast-agent enhancement kinetics, built on a reduced
+  descendant of Bae's compartmental CT-enhancement model, with the sensitivity, Fisher
+  information and Cramer-Rao machinery to determine which physiological parameters a
+  given CT sampling design can recover.
 keywords:
   - contrast enhancement
   - pharmacokinetics
   - computed tomography
   - differentiable simulation
+  - identifiability
+  - Fisher information
+  - experimental design
   - physics-informed neural networks

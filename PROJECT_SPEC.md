@@ -6,6 +6,14 @@
 
 ---
 
+> **Historical planning document (2026-08, pre-pivot).** It records the plan the project
+> started from, not what it found. H1 below was tested and **not supported**: over 20 noise
+> realisations the neural estimators do not beat the closed-form fit, and the study was
+> rewritten around why — a sampling design's Fisher information bounds what any estimator
+> can recover. H2 and H3 were never taken up. See `README.md` and `paper/manuscript.md`
+> for the actual result; this file is kept for provenance.
+
+
 ## 0. 日本語サマリ（開発方針）
 
 Baeのコンパートメント造影増強モデル（注入条件＋生理→大動脈/臓器の造影曲線を「前向き」に予測）を、
