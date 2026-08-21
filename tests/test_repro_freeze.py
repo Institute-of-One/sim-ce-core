@@ -43,13 +43,13 @@ def test_the_manifest_says_how_to_regenerate_itself() -> None:
     manifest = _manifest()
     commands = manifest["reproduce_figures"]
     assert commands, "manifest.reproduce_figures is empty"
-    assert any("freeze" in command for command in commands), (
-        "the manifest lists the experiments but not the step that freezes them"
-    )
+    assert any(
+        "freeze" in command for command in commands
+    ), "the manifest lists the experiments but not the step that freezes them"
     for name, entry in manifest["sources"].items():
-        assert entry["command"] in commands, (
-            f"{name} names a producing command that reproduce_figures omits"
-        )
+        assert (
+            entry["command"] in commands
+        ), f"{name} names a producing command that reproduce_figures omits"
 
 
 def test_check_frozen_passes_at_repo_root() -> None:

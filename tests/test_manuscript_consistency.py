@@ -38,9 +38,9 @@ def test_the_committed_build_is_current():
     """A rebuild must reproduce the committed file exactly."""
     rendered = build_manuscript.render(SOURCE.read_text(encoding="utf-8"), FROZEN)
     assert BUILT.exists(), "paper/build/manuscript.md has never been built"
-    assert BUILT.read_text(encoding="utf-8") == rendered, (
-        "paper/build/manuscript.md is out of date: run python paper/build_manuscript.py"
-    )
+    assert (
+        BUILT.read_text(encoding="utf-8") == rendered
+    ), "paper/build/manuscript.md is out of date: run python paper/build_manuscript.py"
 
 
 def test_the_build_resolves_every_marker():
@@ -52,9 +52,9 @@ def test_the_build_resolves_every_marker():
     # would not see it, so openings are counted against closings.
     opened = len(re.findall(r"\[\[results:", built))
     closed = len(re.findall(r"\[\[results:[^\]]*\]\]", built))
-    assert opened == closed == 0, (
-        f"{opened} unresolved marker(s) in the built manuscript"
-    )
+    assert (
+        opened == closed == 0
+    ), f"{opened} unresolved marker(s) in the built manuscript"
 
 
 def test_a_marker_that_names_nothing_is_an_error():
