@@ -3,7 +3,7 @@ message: If you use this software, please cite it using these metadata.
 title: "sim_ce_core: a differentiable simulator of CT contrast-enhancement kinetics with Fisher-information identifiability analysis"
 type: software
 version: 0.1.0
-date-released: "2026-08-17"
+date-released: "2026-08-21"
 license: MIT
 repository-code: "https://github.com/Institute-of-One/sim-ce-core"
 url: "https://github.com/Institute-of-One/sim-ce-core"
