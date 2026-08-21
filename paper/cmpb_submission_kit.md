@@ -27,8 +27,17 @@ methodologies applied in biomedical areas" and "the eventual distribution of dem
 software" — so the software is the entry ticket rather than the demotion trigger. The
 readership explicitly includes "(radio)physicists" and "pharmacologists".
 
-**Cost.** CMPB is hybrid. The subscription route carries no article-processing charge and
-the author has no funder mandating open access.
+**Cost.** CMPB is hybrid. The open-access charge is USD 3,320 excluding tax for every
+article type; the subscription route carries none, and no funder here mandates open
+access. Choose subscription at submission — it is an initial decision that can be changed
+to open access on acceptance, and the reverse is harder.
+
+**What subscription costs instead.** A twelve-month embargo before the accepted
+manuscript may go into an institutional or funder repository. Nothing here conflicts with
+it: the code is MIT-licensed and public but is not the accepted manuscript, and there is
+no preprint to fall foul of it. It does mean the accepted manuscript cannot be archived
+on Zenodo beside the code until twelve months after publication. Worth knowing for an
+author whose declared position is that code and data should be released openly.
 
 **Honest risk.** CMPB is selective (Impact Factor 6.4, CiteScore 11.9 — higher than
 Medical Physics or Physica Medica). This trades reclassification risk for rejection risk.
