@@ -1,8 +1,14 @@
 # sim_ce_core
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22037562.svg)](https://doi.org/10.5281/zenodo.22037562)
+
 A differentiable, physics-informed simulator of CT contrast-enhancement kinetics,
 built on a reduced descendant of Bae's compartmental model, together with the
 identifiability analysis it was written to support.
+
+The badge is the **concept DOI** and always resolves to the latest version. The
+manuscript cites the **version DOI** `10.5281/zenodo.22037563` (v0.1.0) instead,
+because what a paper has to pin is the exact code its numbers came from.
 
 ## What this study found
 

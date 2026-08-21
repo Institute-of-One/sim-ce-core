@@ -5,8 +5,18 @@ type: software
 version: 0.1.0
 date-released: "2026-08-21"
 license: MIT
+doi: "10.5281/zenodo.22037562"
 repository-code: "https://github.com/Institute-of-One/sim-ce-core"
 url: "https://github.com/Institute-of-One/sim-ce-core"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.22037562"
+    description: All versions of this software (concept DOI; resolves to the latest).
+  - type: doi
+    value: "10.5281/zenodo.22037563"
+    description: >-
+      Version 0.1.0, the archived snapshot behind every number in the IORN-008
+      manuscript.
 authors:
   - family-names: Yamamoto
     given-names: Shuji

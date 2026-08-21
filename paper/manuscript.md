@@ -365,8 +365,9 @@ spent where the limit is not.
 ## Data and code
 
 Software under the MIT licence, with the frozen tables and the commands that regenerate
-every figure, is at https://github.com/Institute-of-One/sim-ce-core. TCIA HCC-TACE-Seg
-is CC BY 4.0 [12,13].
+every figure, is at https://github.com/Institute-of-One/sim-ce-core, and the exact
+version behind every number reported here is archived as v0.1.0 at
+https://doi.org/10.5281/zenodo.22037563. TCIA HCC-TACE-Seg is CC BY 4.0 [12,13].
 
 ## Declaration of competing interest
 
