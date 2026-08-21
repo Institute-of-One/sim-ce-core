@@ -66,11 +66,25 @@ companion submission it went three weeks out of date without anything noticing.
 **Corresponding and sole author.** Shuji Yamamoto, Institute of One, LISIT Co., Ltd.,
 Tokyo, Japan. yamamoto@lisit.jp. ORCID 0000-0001-9211-1071.
 
-**Ethics statement.** This study required no ethics approval. It involved no human
-participants and no animal subjects, and collected no data. The external arm uses
-de-identified public images from the HCC-TACE-Seg collection of The Cancer Imaging
-Archive, released under CC BY 4.0; the original collection carries its own institutional
-approvals.
+**Ethics declaration.** The portal asks whether the research involved *human (organ,
+tissue, cell or participation data)*, animal, or neither. **Answer human.** It does not
+ask whether participants were recruited; it asks whether human-derived data were used,
+and the external arm is liver CT from twenty patients. Answering "not applicable" would
+state that no human data were involved, which the paper's own external validation
+contradicts, and an editor who later notices that has been told something false. There
+is no cost to declaring: the follow-up is where the absence of required approval is
+explained.
+
+Approval and consent:
+
+> Secondary analysis of a publicly available, fully de-identified imaging collection:
+> HCC-TACE-Seg, The Cancer Imaging Archive, DOI 10.7937/TCIA.5FNA-0924, released under
+> CC BY 4.0. No participants were recruited and no data were collected for this study.
+> Institutional approval and participant consent are held by the original collection; no
+> additional approval was required for this secondary use of de-identified public data.
+
+The portal generates a statements file from these answers and prints it in the published
+article. Download and read it before ticking the confirmation: it is a signature.
 
 **Declaration of competing interests.** The author is Representative Director (CEO) of
 LISIT Co., Ltd. and Chief Executive Officer of TexelCraft OÜ; Institute of One is the
