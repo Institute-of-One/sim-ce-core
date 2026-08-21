@@ -75,6 +75,38 @@ contradicts, and an editor who later notices that has been told something false.
 is no cost to declaring: the follow-up is where the absence of required approval is
 explained.
 
+The follow-up questions and their answers:
+
+| Question | Answer |
+|---|---|
+| Complies with relevant laws and guidelines | yes |
+| Reviewed by an ethics committee | **No, not required** — not "Yes, and exempt", which would mean a committee reviewed it and granted exemption. No committee saw it |
+| Clinical trial | no |
+| All participants gave written informed consent | **No** — answering yes would attest that *we* obtained consent. There were no participants in this study |
+| Privacy rights observed | yes — the case labels are the archive's own de-identified identifiers |
+| Included human biological materials | **No** — that question is about organs, tissue and cells. This study used images. It does not contradict declaring human *data* |
+| Case report or series | no |
+
+Guidelines field: Declaration of Helsinki; Ethical Guidelines for Medical and Biological
+Research Involving Human Subjects (Japan, MEXT/MHLW/METI); The Cancer Imaging Archive
+data use policy (CC BY 4.0). Confirm the national guideline's title against the form you
+normally cite — you are the one attesting.
+
+Statement of why review was not required, which is printed in the article:
+
+> This study did not require review by an ethics committee. It recruited no participants
+> and collected no data. Its only human-derived material is a publicly available, fully
+> de-identified imaging collection used as secondary data: HCC-TACE-Seg, The Cancer
+> Imaging Archive, DOI 10.7937/TCIA.5FNA-0924, released under CC BY 4.0. Research using
+> only anonymised information from which individuals cannot be identified falls outside
+> the scope requiring institutional review under the applicable national guidelines.
+> Institutional approval and participant consent for the original collection are held by
+> the contributing institution, and no additional approval was sought or required for
+> this secondary use.
+
+"Not required" on its own reads as a study nobody approved. Naming who holds the approval
+is what makes it a statement rather than an absence.
+
 Approval and consent:
 
 > Secondary analysis of a publicly available, fully de-identified imaging collection:
