@@ -84,8 +84,12 @@ and drafted and revised prose. It was not used to design the study, choose the e
 or decide what the results mean, and no numerical result came from it. No AI system is an
 author.
 
-The manuscript has not been published or submitted elsewhere, and no preprint of it
-exists.
+The manuscript has not been published or submitted elsewhere. I have opted into this
+journal's free preprint service, so it will be posted on SSRN once it passes initial desk
+review; there is no preprint of it anywhere else. arXiv requires an endorser I do not
+have and medRxiv does not recognise the affiliation as a research institution, so this
+service is the only route by which the work becomes publicly readable before
+publication.
 
 Thank you for considering it.
 

@@ -154,9 +154,21 @@ regenerate every figure are in the repository under the MIT licence. The externa
 is the HCC-TACE-Seg collection in The Cancer Imaging Archive, DOI
 10.7937/TCIA.5FNA-0924, CC BY 4.0.
 
-**Preprint.** None. arXiv requires an endorser the author does not have, and medRxiv does
-not recognise the affiliation as a research institution. There is no preprint of this
-work anywhere.
+**Preprint.** **Opt in to the journal's free SSRN service.** arXiv requires an endorser
+the author does not have and medRxiv does not recognise the affiliation as a research
+institution, so this route is the only one open — and it bypasses both, with no endorser
+and no institutional gate.
+
+It posts only after the manuscript passes initial desk review, so a desk rejection leaves
+nothing public. It carries a preprint DOI and links to the version of record on
+publication. And it offsets what the subscription route costs: the twelve-month embargo
+on depositing the accepted manuscript binds much less when the submitted version is
+already readable.
+
+The cover letter says so. "No preprint of this work exists" would have been true at the
+moment of submission, since SSRN posts later, but an author who writes that while opting
+into the journal's own preprint service creates a state that needs explaining, and not
+creating it is cheaper than explaining it.
 
 **Previously published.** No part of this manuscript has been published or submitted
 elsewhere.
